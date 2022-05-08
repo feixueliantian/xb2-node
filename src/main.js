@@ -31,3 +31,11 @@ const data = [
 app.get('/posts', (request, response) => {
   response.send(data);
 });
+
+app.get('/posts/:postId', (request, response) => {
+  const { postId } = request.params;
+
+  const posts = data.filter((item) => item.id == postId);
+
+  response.send(posts[0]);
+});
