@@ -43,7 +43,7 @@ app.get('/posts/:postId', (request, response) => {
 });
 
 app.post('/posts', (request, response) => {
-  const { content } = require.body;
+  const { content } = request.body;
   response.send({
     message: `成功创建了内容 ${content}`,
   });
