@@ -45,6 +45,7 @@ app.get('/posts/:postId', (request, response) => {
 app.post('/posts', (request, response) => {
   const { content } = request.body;
   response.status(201);
+  response.set('Sing-Along', 'How I wonder what you are');
 
   console.log(request.headers['sing-along']);
 
