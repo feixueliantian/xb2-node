@@ -45,6 +45,9 @@ app.get('/posts/:postId', (request, response) => {
 app.post('/posts', (request, response) => {
   const { content } = request.body;
   response.status(201);
+
+  console.log(request.headers['sing-along']);
+
   response.send({
     message: `成功创建了内容 ${content}`,
   });
