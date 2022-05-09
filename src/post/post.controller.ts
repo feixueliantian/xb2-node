@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { request } from 'http';
 import { getPosts, createPost, updatePost } from './post.service';
 
 export const index = async (
