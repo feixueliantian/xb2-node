@@ -7,8 +7,10 @@ const nature = () => {
   });
 };
 
-nature().then((data) => {
+const demo = async () => {
+  const data = await nature();
   console.log(data);
-});
+};
+demo();
 
 console.log('火山');
