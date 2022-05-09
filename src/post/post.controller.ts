@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import _ = require('lodash');
-import { getPosts, createPost, updatePost } from './post.service';
+import { getPosts, createPost, updatePost, deletePost } from './post.service';
 
 export const index = async (
   request: Request,
@@ -39,6 +39,21 @@ export const update = async (
 
   try {
     const data = await updatePost(parseInt(postId, 10), post);
+    response.send(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const destroy = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { postId } = request.params;
+
+  try {
+    const data = await deletePost(parseInt(postId, 10));
     response.send(data);
   } catch (error) {
     next(error);
