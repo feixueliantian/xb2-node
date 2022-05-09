@@ -1,3 +1,3 @@
-import { greet } from './greeting';
+import sayHello from './greeting';
 
-greet();
+sayHello();
