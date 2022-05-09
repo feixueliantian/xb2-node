@@ -8,3 +8,21 @@ export const requestUrl = (
   console.log(request.url);
   next();
 };
+
+export const defaultErrorHandler = (
+  error: any,
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  let statusCode: number, message: string;
+
+  switch (error.message) {
+    default:
+      statusCode = 500;
+      message = '服务除了点问题';
+      break;
+  }
+
+  response.status(statusCode).send({ message });
+};
