@@ -1,4 +1,5 @@
 import express = require('express');
+import { Request, Response } from 'express';
 const app = express();
 const port = 3000;
 
@@ -8,7 +9,7 @@ app.listen(port, () => {
   console.log('服务已启动!');
 });
 
-app.get('/', (request, response) => {
+app.get('/', (request: Request, response: Response) => {
   response.send('你好');
 });
 
@@ -30,11 +31,11 @@ const data = [
   },
 ];
 
-app.get('/posts', (request, response) => {
+app.get('/posts', (request: Request, response: Response) => {
   response.send(data);
 });
 
-app.get('/posts/:postId', (request, response) => {
+app.get('/posts/:postId', (request: Request, response: Response) => {
   const { postId } = request.params;
 
   const posts = data.filter((item) => item.id == postId);
@@ -42,7 +43,7 @@ app.get('/posts/:postId', (request, response) => {
   response.send(posts[0]);
 });
 
-app.post('/posts', (request, response) => {
+app.post('/posts', (request: Request, response: Response) => {
   const { content } = request.body;
   response.status(201);
   response.set('Sing-Along', 'How I wonder what you are');
