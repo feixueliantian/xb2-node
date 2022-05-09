@@ -1,14 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { getPosts } from './post.service';
 
-export const index = (
+export const index = async (
   request: Request,
   response: Response,
   next: NextFunction,
-): void => {
-  if (request.get('authorization') !== 'SECRET') {
-    return next(new Error());
-  }
-  const posts = getPosts();
+) => {
+  const posts = await getPosts();
   response.send(posts);
 };
