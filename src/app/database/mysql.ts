@@ -1,4 +1,4 @@
-import mysql from 'mysql2';
+import { createConnection } from 'mysql2';
 import {
   MYSQL_HOST,
   MYSQL_PORT,
@@ -7,9 +7,9 @@ import {
   MYSQL_DATABASE,
 } from '../../app/app.config';
 
-export const connect = mysql.createConnection({
+export const connection = createConnection({
   host: MYSQL_HOST,
-  port: MYSQL_PORT,
+  port: +MYSQL_PORT,
   user: MYSQL_USER,
   password: MYSQL_PASSWORD,
   database: MYSQL_DATABASE,
