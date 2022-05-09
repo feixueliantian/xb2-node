@@ -15,6 +15,10 @@ export const defaultErrorHandler = (
   response: Response,
   next: NextFunction,
 ) => {
+  if (error.message) {
+    console.log('错误', error.message);
+  }
+
   let statusCode: number, message: string;
 
   switch (error.message) {
