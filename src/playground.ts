@@ -1,8 +1,14 @@
-const nature = (callback) => {
-  const data = '数目';
-  callback(data);
+const nature = () => {
+  console.log('...');
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('恐龙');
+    }, 2000);
+  });
 };
 
-nature((data) => {
+nature().then((data) => {
   console.log(data);
 });
+
+console.log('火山');
