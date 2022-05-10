@@ -3,6 +3,7 @@ import jwt = require('jsonwebtoken');
 import bcrypt = require('bcrypt');
 import * as userService from '../user/user.service';
 import { PUBLIC_KEY } from '../app/app.config';
+import { TokenPayload } from './auth.interface';
 
 export const validateLoginData = async (
   request: Request,
@@ -49,9 +50,11 @@ export const authGuard = (
     if (!token) throw new Error();
 
     // 验证令牌
-    jwt.verify(token, PUBLIC_KEY, {
+    const decoded = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ['RS256'],
     });
+
+    request.user = decoded as TokenPayload;
 
     next();
   } catch (error) {
