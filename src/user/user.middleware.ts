@@ -7,7 +7,7 @@ export const validateUserData = async (
   response: Response,
   next: NextFunction,
 ) => {
-  console.log('验证数据数据');
+  console.log('验证用户数据');
 
   const { name, password } = request.body;
 
