@@ -19,3 +19,11 @@ export const login = async (
     next(error);
   }
 };
+
+export const validate = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  response.sendStatus(200);
+};
