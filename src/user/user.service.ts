@@ -10,3 +10,14 @@ export const createUser = async (user: UserModel) => {
   const [data] = await connection.promise().query(statement, user);
   return data;
 };
+
+export const getUserByName = async (name: string) => {
+  const statement = `
+        SELECT id, name
+        FROM user
+        WHERE name = ?
+    `;
+
+  const [data] = await connection.promise().query(statement, name);
+  return data[0];
+};
