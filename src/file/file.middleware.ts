@@ -32,6 +32,12 @@ export const fileProcessor = async (
     return next(error);
   }
 
-  console.log(image);
+  const { imageSize, tags } = image['_exif'];
+
+  request.fileMetaData = {
+    width: imageSize.width as number,
+    height: imageSize.height as number,
+    metadata: JSON.stringify(tags),
+  };
   next();
 };
