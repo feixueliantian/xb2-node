@@ -13,13 +13,13 @@ export const signToken = (options: SignTokenOptions) => {
 };
 
 // 检查用户是否拥有指定资源
-interface ProcessOptions {
+interface PosessOptions {
   resourceId: number;
   resourceType: string;
   userId: number;
 }
 
-export const process = async (options: ProcessOptions) => {
+export const possess = async (options: PosessOptions) => {
   const { resourceId, resourceType, userId } = options;
 
   const statement = `
