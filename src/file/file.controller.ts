@@ -66,13 +66,13 @@ export const serve = async (
  */
 export const metadata = async (
   request: Request,
-  response: Resonse,
+  response: Response,
   next: NextFunction,
 ) => {
-  const { postId } = request.params;
+  const { fileId } = request.params;
 
   try {
-    const file = await findFileById(parseInt(postId, 10));
+    const file = await findFileById(parseInt(fileId, 10));
     const data = _.pick(file, ['id', 'size', 'width', 'height', 'metadata']);
     response.send(data);
   } catch (error) {
