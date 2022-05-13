@@ -57,6 +57,25 @@ export const serve = async (
       },
     });
   } catch (error) {
-    return next(error);
+    next(error);
+  }
+};
+
+/**
+ * 文件信息
+ */
+export const metadata = async (
+  request: Request,
+  response: Resonse,
+  next: NextFunction,
+) => {
+  const { postId } = request.params;
+
+  try {
+    const file = await findFileById(parseInt(postId, 10));
+    const data = _.pick(file, ['id', 'size', 'width', 'height', 'metadata']);
+    response.send(data);
+  } catch (error) {
+    next(error);
   }
 };
