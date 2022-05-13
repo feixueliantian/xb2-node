@@ -1,3 +1,5 @@
+import path = require('path');
+import Jimp = require('jimp');
 import { connection } from '../app/database/mysql';
 import { FileModel } from './file.model';
 
@@ -33,4 +35,24 @@ export const findFileById = async (fileId: number) => {
 
   // 提供数据
   return data[0];
+};
+
+/**
+ * 调整图像尺寸
+ */
+export const imageResizer = async (image: Jimp, file: Express.Multer.File) => {
+  const { imageSize } = image['_exif'];
+  const filePath = path.join(file.destination, 'resized', file.filename);
+
+  if (imageSize.width > 1280) {
+    image.resize(1280, Jimp.AUTO).quality(85).write(`${filePath}-large`);
+  }
+
+  if (imageSize.width > 640) {
+    image.resize(640, Jimp.AUTO).quality(85).write(`${filePath}-medium`);
+  }
+
+  if (imageSize.width > 320) {
+    image.resize(320, Jimp.AUTO).quality(85).write(`${filePath}-thumbnail`);
+  }
 };
