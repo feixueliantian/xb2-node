@@ -22,7 +22,7 @@ router.delete(
 router.post(
   '/posts/:postId/tag',
   authGuard,
-  accessControl,
+  accessControl({ possession: true }),
   postController.storePostTag,
 );
 
