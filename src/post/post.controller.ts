@@ -9,6 +9,7 @@ import {
   deletePost,
   createPostTag,
   postHasTag,
+  deletePostTag,
 } from './post.service';
 
 export const index = async (
@@ -71,6 +72,9 @@ export const destroy = async (
   }
 };
 
+/**
+ * 添加内容标签处理器
+ */
 export const storePostTag = async (
   request: Request,
   response: Response,
@@ -97,6 +101,25 @@ export const storePostTag = async (
     // 为内容打上标签
     const data = await createPostTag(parseInt(postId, 10), tag.id);
     return response.status(201).send(data);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * 移除内容标签处理器
+ */
+export const destroyPostTag = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { postId } = request.params;
+  const { tagId } = request.body;
+
+  try {
+    await deletePostTag(parseInt(postId, 10), tagId);
+    return response.sendStatus(200);
   } catch (error) {
     return next(error);
   }
