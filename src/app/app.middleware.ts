@@ -58,6 +58,10 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '标签已经存在';
       break;
+    case 'POST_ALREADY_HAS_THIS_TAG':
+      statusCode = 400;
+      message = '内容已经打过该标签了';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';
