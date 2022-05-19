@@ -27,3 +27,16 @@ export const getTagByName = async (tagName: string) => {
   const [data] = await connection.promise().query(statement, tagName);
   return data[0];
 };
+
+/**
+ * 保存内容标签
+ */
+export const createPostTag = async (postId: number, tagId: number) => {
+  const statement = `
+    INSERT INTO post_tag (postId, tagId)
+    VALUES (?, ?)
+  `;
+
+  const [data] = await connection.promise().query(statement);
+  return data;
+};
