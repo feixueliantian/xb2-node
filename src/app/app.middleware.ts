@@ -62,6 +62,10 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '内容已经打过该标签了';
       break;
+    case 'UNABLE_TO_REPLY_THIS_COMMENT':
+      statusCode = 400;
+      message = '无法回复该条评论';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';
