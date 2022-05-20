@@ -9,7 +9,7 @@ router.post('/comments/:commentId/reply', authGuard, commentController.reply);
 router.patch(
   '/comments/:commentId',
   authGuard,
-  accessControl,
+  accessControl({ possession: true }),
   commentController.update,
 );
 
