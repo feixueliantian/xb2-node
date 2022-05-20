@@ -10,6 +10,6 @@ export const createComment = async (comment: CommentModel) => {
     SET ?
   `;
 
-  const [data] = await connection.promise().query(statement);
+  const [data] = await connection.promise().query(statement, comment);
   return data;
 };
