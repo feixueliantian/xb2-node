@@ -92,10 +92,10 @@ export const destroy = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { commentID } = request.params;
+  const { commentId } = request.params;
 
   try {
-    const data = await deleteComment(parseInt(commentID, 10));
+    const data = await deleteComment(parseInt(commentId, 10));
     return response.send(data);
   } catch (error) {
     return next(error);
