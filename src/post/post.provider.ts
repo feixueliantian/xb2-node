@@ -9,4 +9,11 @@ export const sqlFragment = {
     LEFT JOIN user
     ON user.id = post.userId
   `,
+  totalComments: `
+    (
+      SELECT COUNT(comment.id)
+      FROM comment
+      WHERE comment.postId = post.id
+    ) as totalComments
+  `,
 };
