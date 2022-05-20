@@ -45,3 +45,16 @@ export const updateComment = async (
     .query(statement, [comment, commentId]);
   return data;
 };
+
+/**
+ * 删除评论
+ */
+export const deleteComment = async (commentId: number) => {
+  const statement = `
+    DELETE FROM comment
+    WHERE id = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, commentId);
+  return data;
+};
