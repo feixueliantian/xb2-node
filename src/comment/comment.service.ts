@@ -23,6 +23,6 @@ export const isReplyComment = async (commentId: number) => {
     WHERE id = ?
   `;
 
-  const [data] = await connection.promise().query(statement);
+  const [data] = await connection.promise().query(statement, commentId);
   return data[0].parentId ? true : false;
 };
