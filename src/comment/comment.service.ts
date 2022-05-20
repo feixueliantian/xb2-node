@@ -26,3 +26,22 @@ export const isReplyComment = async (commentId: number) => {
   const [data] = await connection.promise().query(statement, commentId);
   return data[0].parentId ? true : false;
 };
+
+/**
+ * 修改评论
+ */
+export const updateComment = async (
+  commentId: number,
+  comment: CommentModel,
+) => {
+  const statement = `
+    UPDATE comment
+    SET ?
+    WHERE id = ?
+  `;
+
+  const [data] = await connection
+    .promise()
+    .query(statement, [comment, commentId]);
+  return data;
+};
