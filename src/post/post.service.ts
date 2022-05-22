@@ -25,6 +25,8 @@ export const getPosts = async (options: GetPostsOptions) => {
     GROUP BY post.id
     ORDER BY ${sort}
   `;
+  console.log('######');
+  console.log(statement);
   const [data] = await connection.promise().query(statement);
   return data;
 };
