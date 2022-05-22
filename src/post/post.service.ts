@@ -46,6 +46,8 @@ export const getPosts = async (options: GetPostsOptions) => {
     WHERE ${filter.sql}
     GROUP BY post.id
     ORDER BY ${sort}
+    LIMIT ?
+    OFFSET ?
   `;
   const [data] = await connection.promise().query(statement, params);
   return data;

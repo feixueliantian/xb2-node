@@ -66,3 +66,23 @@ export const filter = async (
 
   next();
 };
+
+/**
+ * 分页
+ */
+export const paginate = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { page = 1 } = request.query;
+  const limit = parseInt(POSTS_PER_PAGE, 10) || 30;
+  const offset = (parseInt(page as string, 10) - 1) * limit;
+
+  request.pagination = {
+    limit,
+    offset,
+  };
+
+  next();
+};
