@@ -2,12 +2,23 @@ import { connection } from '../app/database/mysql';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
 
+interface GetPostsOptionsFilter {
+  name: string;
+  sql: string;
+  params?: string;
+}
+
 interface GetPostsOptions {
   sort: string;
+  filter: GetPostsOptionsFilter;
 }
 
 export const getPosts = async (options: GetPostsOptions) => {
-  const { sort } = options;
+  const { sort, filter } = options;
+  let params: any[] = [];
+  if (filter.params) {
+    params = [filter.params, ...params];
+  }
 
   const statement = `
     SELECT
@@ -22,12 +33,13 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}
     ${sqlFragment.leftJoinTag}
+    WHERE ${filter.sql}
     GROUP BY post.id
     ORDER BY ${sort}
   `;
   console.log('######');
   console.log(statement);
-  const [data] = await connection.promise().query(statement);
+  const [data] = await connection.promise().query(statement, params);
   return data;
 };
 
