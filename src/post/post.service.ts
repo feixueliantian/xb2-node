@@ -19,6 +19,26 @@ interface GetPostsOptions {
   pagination: GetPostsOptionsPagination;
 }
 
+/**
+ * 统计内容数量
+ */
+export const getPostsTotalCount = async (options: GetPostsOptions) => {
+  const { filter } = options;
+  const params = [filter.params];
+
+  const statement = `
+    SELECT COUNT(DISTINCT post.id) AS total
+    FROM post
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinOneFile}
+    ${sqlFragment.leftJoinTag}
+    WHERE ${filter.sql}
+  `;
+
+  const [data] = await connection.promise().query(statement, params);
+  return data[0].total;
+};
+
 export const getPosts = async (options: GetPostsOptions) => {
   const {
     sort,

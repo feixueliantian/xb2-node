@@ -10,6 +10,7 @@ import {
   createPostTag,
   postHasTag,
   deletePostTag,
+  getPostsTotalCount,
 } from './post.service';
 
 export const index = async (
@@ -23,6 +24,14 @@ export const index = async (
       filter: request.filter,
       pagination: request.pagination,
     });
+
+    const totalCount = await getPostsTotalCount({
+      sort: request.sort,
+      filter: request.filter,
+      pagination: request.pagination,
+    });
+
+    response.header('X-TOTAL-COUNT', totalCount);
     response.send(posts);
   } catch (error) {
     next(error);
