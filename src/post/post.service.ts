@@ -8,14 +8,24 @@ export interface GetPostsOptionsFilter {
   params?: string;
 }
 
+export interface GetPostsOptionsPagination {
+  limit: number;
+  offset: number;
+}
+
 interface GetPostsOptions {
   sort: string;
   filter: GetPostsOptionsFilter;
+  pagination: GetPostsOptionsPagination;
 }
 
 export const getPosts = async (options: GetPostsOptions) => {
-  const { sort, filter } = options;
-  let params: any[] = [];
+  const {
+    sort,
+    filter,
+    pagination: { limit, offset },
+  } = options;
+  let params: any[] = [limit, offset];
   if (filter.params) {
     params = [filter.params, ...params];
   }
