@@ -7,7 +7,7 @@ import { imageResizer } from './file.service';
 /**
  * 文件过滤器
  */
-const fileFilter = (fileTypes: string[]) => {
+export const fileFilter = (fileTypes: string[]) => {
   return (
     request: Request,
     file: Express.Multer.File,
