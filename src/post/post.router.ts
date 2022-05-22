@@ -1,11 +1,11 @@
 import express = require('express');
 import * as postController from './post.controller';
 import { authGuard, accessControl } from '../auth/auth.middleware';
-import { sort } from './post.middleware';
+import { sort, filter } from './post.middleware';
 
 const router = express.Router();
 
-router.get('/posts', sort, postController.index);
+router.get('/posts', sort, filter, postController.index);
 router.post('/posts', authGuard, postController.store);
 router.patch(
   '/posts/:postId',

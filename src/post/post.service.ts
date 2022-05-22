@@ -2,7 +2,7 @@ import { connection } from '../app/database/mysql';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
 
-interface GetPostsOptionsFilter {
+export interface GetPostsOptionsFilter {
   name: string;
   sql: string;
   params?: string;
@@ -37,8 +37,6 @@ export const getPosts = async (options: GetPostsOptions) => {
     GROUP BY post.id
     ORDER BY ${sort}
   `;
-  console.log('######');
-  console.log(statement);
   const [data] = await connection.promise().query(statement, params);
   return data;
 };
