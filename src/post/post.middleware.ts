@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { POSTS_PER_PAGE } from '../app/app.config';
 
 /**
  * 准备排序参数
