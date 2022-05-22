@@ -9,6 +9,7 @@ declare global {
         height?: number;
         metadata?: string;
       };
+      sort: string;
     }
   }
 }
