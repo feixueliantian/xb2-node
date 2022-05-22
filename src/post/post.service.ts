@@ -10,10 +10,12 @@ export const getPosts = async () => {
       post.content,
       ${sqlFragment.user},
       ${sqlFragment.totalComments},
-      ${sqlFragment.file}
+      ${sqlFragment.file},
+      ${sqlFragment.tags}
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}
+    ${sqlFragment.leftJoinTag}
     GROUP BY post.id
   `;
   const [data] = await connection.promise().query(statement);
