@@ -26,5 +26,5 @@ export const getAvatarByUserId = async (userId: number) => {
   `;
 
   const [data] = await connection.promise().query(statement, userId);
-  return data;
+  return data[0];
 };
