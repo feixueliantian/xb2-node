@@ -2,6 +2,6 @@ export class AvatarModel {
   id?: number;
   filename: string;
   mimetype: string;
-  filesize: number;
+  size: number;
   userId: number;
 }
