@@ -13,6 +13,6 @@ router.post(
   avatarController.store,
 );
 
-router.get('/user/:userId/avatar', avatarController.serve);
+router.get('/users/:userId/avatar', avatarController.serve);
 
 export default router;
