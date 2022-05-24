@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { accessControl, authGuard } from '../auth/auth.middleware';
 import * as commentController from './comment.controller';
+import { filter } from './comment.middleware';
 
 const router = Router();
 
@@ -18,6 +19,6 @@ router.delete(
   accessControl({ possession: true }),
   commentController.destroy,
 );
-router.get('/comments', commentController.index);
+router.get('/comments', filter, commentController.index);
 
 export default router;

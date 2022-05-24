@@ -112,7 +112,7 @@ export const index = async (
   next: NextFunction,
 ) => {
   try {
-    const data = await getComments();
+    const data = await getComments({ filter: request.filter });
     return response.send(data);
   } catch (error) {
     return next(error);
