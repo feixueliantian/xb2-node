@@ -132,3 +132,30 @@ export const getCommentsTotalCount = async (options: GetCommentsOptions) => {
   const [data] = await connection.promise().query(statement, params);
   return data[0].total;
 };
+
+interface GetCommentRepliesOptions {
+  commentId: number;
+}
+/**
+ * 获取某条评论的回复
+ */
+export const getCommentReplies = async (options: GetCommentRepliesOptions) => {
+  const { commentId } = options;
+
+  const statement = `
+    SELECT
+      comment.id,
+      comment.content,
+      ${sqlFragment.user}
+    FROM
+      comment
+    ${sqlFragment.leftJoinUser}
+    WHERE
+      comment.parentId = ?
+    GROUP BY
+      comment.id
+  `;
+
+  const [data] = await connection.promise().query(statement, commentId);
+  return data;
+};
