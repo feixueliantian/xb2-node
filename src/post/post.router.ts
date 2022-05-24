@@ -6,6 +6,7 @@ import { sort, filter, paginate } from './post.middleware';
 const router = express.Router();
 
 router.get('/posts', sort, filter, paginate, postController.index);
+router.get('/posts/:postId', postController.show);
 router.post('/posts', authGuard, postController.store);
 router.patch(
   '/posts/:postId',

@@ -11,6 +11,7 @@ import {
   postHasTag,
   deletePostTag,
   getPostsTotalCount,
+  getPostById,
 } from './post.service';
 
 export const index = async (
@@ -51,6 +52,22 @@ export const store = async (
     response.status(201).send(data);
   } catch (error) {
     next(error);
+  }
+};
+
+export const show = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { postId } = request.params;
+
+  try {
+    const data = await getPostById(parseInt(postId, 10));
+    if (!data) throw new Error('NOT_FOUND');
+    return response.send(data);
+  } catch (error) {
+    return next(error);
   }
 };
 

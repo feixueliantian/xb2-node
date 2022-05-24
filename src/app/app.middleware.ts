@@ -70,6 +70,10 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '不能上传此类型的文件';
       break;
+    case 'NOT_FOUND':
+      statusCode = 404;
+      message = '没找到';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';
