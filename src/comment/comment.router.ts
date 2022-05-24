@@ -27,5 +27,6 @@ router.get(
   paginate(COMMENTS_PER_PAGE),
   commentController.index,
 );
+router.get('/comments/:commentId/replies', commentController.indexReplies);
 
 export default router;
