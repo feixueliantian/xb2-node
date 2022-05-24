@@ -92,6 +92,7 @@ export const getPostById = async (postId: number) => {
     ${sqlFragment.leftJoinOneFile}
     ${sqlFragment.leftJoinTag}
     WHERE post.id = ?
+    GROUP BY post.id
   `;
 
   const [data] = await connection.promise().query(statement, postId);
