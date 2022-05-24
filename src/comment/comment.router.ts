@@ -18,5 +18,6 @@ router.delete(
   accessControl({ possession: true }),
   commentController.destroy,
 );
+router.get('/comments', commentController.index);
 
 export default router;

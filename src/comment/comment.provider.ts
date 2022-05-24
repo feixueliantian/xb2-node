@@ -17,7 +17,7 @@ export const sqlFragment = {
         ON post.id = comment.postId
   `,
   post: `
-    JOSN_OBJECT(
+    JSON_OBJECT(
       'id', post.id,
       'title', post.title
     ) AS post
