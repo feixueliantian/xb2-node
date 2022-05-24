@@ -2,10 +2,17 @@ import express = require('express');
 import * as postController from './post.controller';
 import { authGuard, accessControl } from '../auth/auth.middleware';
 import { sort, filter, paginate } from './post.middleware';
+import { POSTS_PER_PAGE } from '../app/app.config';
 
 const router = express.Router();
 
-router.get('/posts', sort, filter, paginate, postController.index);
+router.get(
+  '/posts',
+  sort,
+  filter,
+  paginate(POSTS_PER_PAGE),
+  postController.index,
+);
 router.get('/posts/:postId', postController.show);
 router.post('/posts', authGuard, postController.store);
 router.patch(
