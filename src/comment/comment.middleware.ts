@@ -34,5 +34,14 @@ export const filter = async (
     };
   }
 
+  // 查看用户的回复
+  if (user && action === 'reply' && !post) {
+    request.filter = {
+      name: 'userReplied',
+      sql: 'comment.parentId IS NOT NULL AND comment.userId = ?',
+      params: user as string,
+    };
+  }
+
   next();
 };
