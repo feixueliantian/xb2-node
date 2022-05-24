@@ -35,7 +35,7 @@ export const filter = async (
   }
 
   // 查看用户的回复
-  if (user && action === 'reply' && !post) {
+  if (user && action === 'replied' && !post) {
     request.filter = {
       name: 'userReplied',
       sql: 'comment.parentId IS NOT NULL AND comment.userId = ?',
