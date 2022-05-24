@@ -76,6 +76,28 @@ export const getPosts = async (options: GetPostsOptions) => {
   return data;
 };
 
+export const getPostById = async (postId: number) => {
+  const statement = `
+    SELECT
+      post.id,
+      post.title,
+      post.content,
+      ${sqlFragment.user},
+      ${sqlFragment.totalComments},
+      ${sqlFragment.file},
+      ${sqlFragment.tags},
+      ${sqlFragment.totalLikes}
+    FROM post
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinOneFile}
+    ${sqlFragment.leftJoinTag}
+    WHERE post.id = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, postId);
+  return data[0];
+};
+
 export const createPost = async (post: PostModel) => {
   const statement = `
     INSERT INTO post
