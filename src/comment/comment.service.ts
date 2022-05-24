@@ -1,5 +1,8 @@
 import { connection } from '../app/database/mysql';
-import { GetPostsOptionsFilter } from '../post/post.service';
+import {
+  GetPostsOptionsFilter,
+  GetPostsOptionsPagination,
+} from '../post/post.service';
 import { CommentModel } from './comment.model';
 import { sqlFragment } from './comment.provider';
 
@@ -63,15 +66,19 @@ export const deleteComment = async (commentId: number) => {
 
 interface GetCommentsOptions {
   filter: GetPostsOptionsFilter;
+  pagination: GetPostsOptionsPagination;
 }
 
 /**
  * 获取评论列表
  */
 export const getComments = async (options: GetCommentsOptions) => {
-  const { filter } = options;
+  const {
+    filter,
+    pagination: { limit, offset },
+  } = options;
 
-  let params: string[] = [];
+  let params: Array<string | number> = [limit, offset];
   if (filter.params) {
     params = [filter.params, ...params];
   }
@@ -94,6 +101,8 @@ export const getComments = async (options: GetCommentsOptions) => {
       comment.id
     ORDER BY
       comment.id DESC
+    LIMIT ?
+    OFFSET ?
   `;
 
   const [data] = await connection.promise().query(statement, params);

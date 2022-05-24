@@ -112,7 +112,10 @@ export const index = async (
   next: NextFunction,
 ) => {
   try {
-    const data = await getComments({ filter: request.filter });
+    const data = await getComments({
+      filter: request.filter,
+      pagination: request.pagination,
+    });
     return response.send(data);
   } catch (error) {
     return next(error);

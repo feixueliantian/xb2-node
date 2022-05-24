@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import { COMMENTS_PER_PAGE } from '../app/app.config';
 import { accessControl, authGuard } from '../auth/auth.middleware';
+import { paginate } from '../post/post.middleware';
 import * as commentController from './comment.controller';
 import { filter } from './comment.middleware';
 
@@ -19,6 +21,11 @@ router.delete(
   accessControl({ possession: true }),
   commentController.destroy,
 );
-router.get('/comments', filter, commentController.index);
+router.get(
+  '/comments',
+  filter,
+  paginate(COMMENTS_PER_PAGE),
+  commentController.index,
+);
 
 export default router;
