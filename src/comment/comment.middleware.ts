@@ -8,10 +8,20 @@ export const filter = async (
   response: Response,
   next: NextFunction,
 ) => {
+  const { post, user, action } = request.query;
+
   request.filter = {
     name: 'default',
     sql: 'comment.parentId IS NULL',
   };
+
+  if (post && !user && !action) {
+    request.filter = {
+      name: 'postComments',
+      sql: 'comment.parentId IS NULL AND comment.postId = ?',
+      params: post as string,
+    };
+  }
 
   next();
 };
