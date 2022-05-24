@@ -3,6 +3,7 @@ import {
   createComment,
   deleteComment,
   getComments,
+  getCommentsTotalCount,
   isReplyComment,
   updateComment,
 } from './comment.service';
@@ -112,6 +113,9 @@ export const index = async (
   next: NextFunction,
 ) => {
   try {
+    const total = await getCommentsTotalCount({ filter: request.filter });
+    response.header('X-Total-Count', total);
+
     const data = await getComments({
       filter: request.filter,
       pagination: request.pagination,

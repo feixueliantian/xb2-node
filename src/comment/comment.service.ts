@@ -66,7 +66,7 @@ export const deleteComment = async (commentId: number) => {
 
 interface GetCommentsOptions {
   filter: GetPostsOptionsFilter;
-  pagination: GetPostsOptionsPagination;
+  pagination?: GetPostsOptionsPagination;
 }
 
 /**
@@ -107,4 +107,28 @@ export const getComments = async (options: GetCommentsOptions) => {
 
   const [data] = await connection.promise().query(statement, params);
   return data;
+};
+
+/**
+ * 统计评论数量
+ */
+export const getCommentsTotalCount = async (options: GetCommentsOptions) => {
+  const { filter } = options;
+
+  let params: Array<number | string> = [];
+
+  if (filter.params) {
+    params = [filter.params, ...params];
+  }
+
+  const statement = `
+    SELECT COUNT(DISTINCT comment.id) AS total
+    FROM comment
+    ${sqlFragment.leftJoinUser}
+    ${sqlFragment.leftJoinPost}
+    WHERE ${filter.sql}
+  `;
+
+  const [data] = await connection.promise().query(statement, params);
+  return data[0].total;
 };
