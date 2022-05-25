@@ -66,3 +66,24 @@ describe('测试创建用户接口', () => {
     expect(response.status).toBe(201);
   });
 });
+
+/**
+ * 获取用户
+ */
+describe('测试获取用户接口', () => {
+  test('响应里包含指定的属性', async () => {
+    const response = await request(app).get(`/users/${testUserCreated.id}`);
+    expect(response.status).toBe(200);
+    expect(response.body.name).toBe(testUser.name);
+    expect(response.body).toMatchObject({
+      id: expect.any(Number),
+      name: expect.any(String),
+      avatar: null,
+    });
+  });
+
+  test('当用户不存在时，响应的状态吗为 404', async () => {
+    const response = await request(app).get('/users/-1');
+    expect(response.status).toBe(404);
+  });
+});
