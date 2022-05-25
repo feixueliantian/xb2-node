@@ -16,7 +16,7 @@ interface GetUserOptions {
 }
 
 const getUser = (condition: string) => {
-  return async (param: string, options: GetUserOptions = {}) => {
+  return async (param: string | number, options: GetUserOptions = {}) => {
     const { password } = options;
     const statement = `
           SELECT

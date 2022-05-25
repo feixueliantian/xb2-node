@@ -74,6 +74,10 @@ export const defaultErrorHandler = (
       statusCode = 404;
       message = '没找到';
       break;
+    case 'USER_NOT_FOUND':
+      statusCode = 404;
+      message = '这个用户没找到';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';
