@@ -39,3 +39,19 @@ const getUser = (condition: string) => {
 
 export const getUserByName = getUser('user.name');
 export const getUserById = getUser('user.id');
+
+/**
+ * 更新用户数据
+ */
+export const updateUser = async (userId: number, userData: UserModel) => {
+  const statement = `
+    UPDATE user
+    SET ?
+    WHERE id = ?
+  `;
+
+  const [data] = await connection
+    .promise()
+    .query(statement, [userData, userId]);
+  return data;
+};
