@@ -7,6 +7,7 @@ import tagRouter from '../tag/tag.router';
 import commentRouter from '../comment/comment.router';
 import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
+import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(
   commentRouter,
   avatarRouter,
   likeRouter,
+  appRouter,
 );
 
 app.use(defaultErrorHandler);
