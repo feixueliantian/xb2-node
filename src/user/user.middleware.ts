@@ -55,7 +55,7 @@ export const validateUpdateUserData = async (
     // 检查用户名是否被占用
     if (update.name) {
       const user = await userService.getUserByName(update.name);
-      if (user) throw new Error('USER_ALREADY_EXISTS');
+      if (user) throw new Error('USER_ALREADY_EXIST');
     }
 
     // 检查新密码是否与原来的相同
