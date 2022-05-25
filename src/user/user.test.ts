@@ -5,6 +5,7 @@ import { connection } from '../app/database/mysql';
 import { signToken } from '../auth/auth.service';
 import { deleteUser, getUserById } from './user.service';
 import { UserModel } from './user.model';
+import { response } from 'express';
 
 /**
  * 准备测试
@@ -85,5 +86,51 @@ describe('测试获取用户接口', () => {
   test('当用户不存在时，响应的状态吗为 404', async () => {
     const response = await request(app).get('/users/-1');
     expect(response.status).toBe(404);
+  });
+});
+
+/**
+ * 更新用户
+ */
+describe('测试更新用户接口', () => {
+  test('更新用户时需要验证用户身份', async () => {
+    const response = await request(app).patch('/users');
+    expect(response.status).toBe(401);
+  });
+
+  test('更新用户数据', async () => {
+    const token = signToken({
+      payload: {
+        id: testUserCreated.id,
+        name: testUserCreated.name,
+      },
+    });
+
+    const response = await request(app)
+      .patch('/users')
+      .set({
+        Authorization: `Bearer ${token}`,
+      })
+      .send({
+        validate: {
+          password: testUser.password,
+        },
+        update: {
+          name: testUserUpdated.name,
+          password: testUserUpdated.password,
+        },
+      });
+    // 状态码
+    expect(response.status).toBe(200);
+
+    // 获取更新之后的用户数据
+    const user = await getUserById(testUserCreated.id, { password: true });
+    // 检测更新之后数据库中保存的数据确实是更新时提交的数据
+    expect(user.name).toBe(testUserUpdated.name);
+    const matched = await bcrypt.compare(
+      testUserUpdated.password,
+      user.password,
+    );
+    expect(matched).toBeTruthy();
   });
 });
