@@ -15,20 +15,27 @@ interface GetUserOptions {
   password?: boolean;
 }
 
-export const getUserByName = async (
-  name: string,
-  options: GetUserOptions = {},
-) => {
-  const { password } = options;
-  const statement = `
-        SELECT
-          id,
-          name
-          ${password ? ', password' : ''}
-        FROM user
-        WHERE name = ?
-    `;
+const getUser = (condition: string) => {
+  return async (param: string, options: GetUserOptions = {}) => {
+    const { password } = options;
+    const statement = `
+          SELECT
+            user.id,
+            user.name,
+            IF(count(avatar.id), 1, NULL) AS avatar,
+            ${password ? ', password' : ''}
+          FROM
+            user
+          LEFT JOIN
+            avatar ON avatar.userId = user.id
+          GROUP BY user.id
+          HAVING ${condition} = ?
+      `;
 
-  const [data] = await connection.promise().query(statement, name);
-  return data[0];
+    const [data] = await connection.promise().query(statement, param);
+    return data[0];
+  };
 };
+
+export const getUserByName = getUser('user.name');
+export const getUserById = getUser('user.id');
