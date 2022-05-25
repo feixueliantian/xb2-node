@@ -22,7 +22,7 @@ const getUser = (condition: string) => {
           SELECT
             user.id,
             user.name,
-            IF(count(avatar.id), 1, NULL) AS avatar,
+            IF(count(avatar.id), 1, NULL) AS avatar
             ${password ? ', password' : ''}
           FROM
             user
