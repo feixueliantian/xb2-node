@@ -36,3 +36,33 @@ afterAll(async () => {
   // 断开数据服务连接
   connection.end();
 });
+
+/**
+ * 创建用户
+ */
+describe('测试创建用户接口', () => {
+  test('创建用户时必须提供用户名', async () => {
+    const response = await request(app)
+      .post('/users')
+      .send({ password: testUser.password });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: '请提供用户名' });
+  });
+
+  test('创建用户时必须提供用户密码', async () => {
+    const response = await request(app)
+      .post('/users')
+      .send({ name: testUser.name });
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: '请提供用户密码' });
+  });
+
+  test('创建用户成功返回 201', async () => {
+    const response = await request(app).post('/users').send(testUser);
+    testUserCreated = await getUserById(response.body.insertId, {
+      password: true,
+    });
+    expect(response.status).toBe(201);
+  });
+});
