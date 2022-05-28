@@ -6,7 +6,9 @@
   "scripts": {
     "start:dev": "tsc-watch --onSuccess \"node dist/main.js\"",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "prebuild": "rimraf dist",
+    "build": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +29,7 @@
     "eslint-config-prettier": "^8.5.0",
     "jest": "^28.1.0",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "supertest": "^6.2.3",
     "ts-jest": "^28.0.3",
     "tsc-watch": "^5.0.3",
