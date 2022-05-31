@@ -1,4 +1,5 @@
 import express = require('express');
+import cors = require('cors');
 import postRouter from '../post/post.router';
 import userRouter from '../user/user.router';
 import authRouter from '../auth/auth.router';
@@ -11,6 +12,13 @@ import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 
 const app = express();
+
+app.use(
+  cors({
+    origin: '*',
+    exposedHeaders: 'X-Total-Count',
+  }),
+);
 
 app.use(express.json());
 
