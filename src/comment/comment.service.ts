@@ -16,7 +16,7 @@ export const createComment = async (comment: CommentModel) => {
   `;
 
   const [data] = await connection.promise().query(statement, comment);
-  return data;
+  return data as any;
 };
 
 /**

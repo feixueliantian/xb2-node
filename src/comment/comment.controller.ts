@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { socketIoServer } from '../app/app.server';
 import {
   createComment,
   deleteComment,
+  getCommentById,
   getCommentReplies,
   getComments,
   getCommentsTotalCount,
@@ -19,6 +21,8 @@ export const store = async (
 ) => {
   const { id: userId } = request.user;
   const { content, postId } = request.body;
+  const socketId = request.header('X-Socket-Id');
+
   const comment = {
     content,
     postId,
@@ -27,6 +31,14 @@ export const store = async (
 
   try {
     const data = await createComment(comment);
+    const createdComment = await getCommentById(data.insertId);
+
+    // 触发事件
+    socketIoServer.emit('commentCreated', {
+      comment: createdComment,
+      socketId,
+    });
+
     return response.status(201).send(data);
   } catch (error) {
     return next(error);
