@@ -57,6 +57,8 @@ export const reply = async (
   const parentId = parseInt(commentId, 10);
   const { id: userId } = request.user;
   const { content, postId } = request.body;
+  const socketId = request.header('X-Socket-Id');
+
   const comment = {
     content,
     postId,
@@ -71,6 +73,16 @@ export const reply = async (
 
     // 创建一条回复评论
     const data = await createComment(comment);
+    const reply = await getCommentById(data.insertId, {
+      resourceType: 'reply',
+    });
+
+    // 触发事件
+    socketIoServer.emit('replyCreated', {
+      reply,
+      socketId,
+    });
+
     return response.status(201).send(data);
   } catch (error) {
     return next(error);
