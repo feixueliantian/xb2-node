@@ -45,22 +45,25 @@ interface SearchUsersOptions {
 export const searchUsers = async (options: SearchUsersOptions) => {
   const { name } = options;
 
-  const params = [`%${name}%`];
+  const params: Array<any> = [`%${name}%`];
 
   const statement = `
     SELECT
       user.id,
       user.name,
-      IF(COUNT(avatar.id) ? 1 : NULL) as avatar
+      IF(COUNT(avatar.id), 1, NULL) AS avatar,
       (
-        SELECT COUNT(post.id)
-        FROM post
-        WHERE post.userId = user.id
-      ) as totalPosts
+        SELECT
+          COUNT(post.id)
+        FROM
+          post
+        WHERE
+          post.userId = user.id
+      ) AS totalPosts
     FROM
       user
-    LEFT JOIN
-      avatar ON avatar.userId = user.id
+    LEFT JOIN avatar
+      ON avatar.userId = user.id
     WHERE
       user.name like ?
     GROUP BY
