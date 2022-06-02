@@ -1,4 +1,6 @@
 import path = require('path');
+import { access, unlink } from 'fs/promises';
+import { constants } from 'fs';
 import Jimp = require('jimp');
 import { connection } from '../app/database/mysql';
 import { FileModel } from './file.model';
@@ -54,5 +56,51 @@ export const imageResizer = async (image: Jimp, file: Express.Multer.File) => {
 
   if (imageSize.width > 320) {
     image.resize(320, Jimp.AUTO).quality(85).write(`${filePath}-thumbnail`);
+  }
+};
+
+/**
+ * 找出内容相关文件
+ */
+export const getPostFiles = async (postId: number) => {
+  const statement = `
+    SELECT *
+    FROM file
+    WHERE postId = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, postId);
+  return data as Array<FileModel>;
+};
+
+/**
+ * 删除内容文件
+ */
+export const deletePostFiles = async (files: Array<FileModel>) => {
+  const uploads = 'uploads';
+  const resized = [uploads, 'resized'];
+
+  for (const file of files) {
+    const filesToDelete = [
+      [uploads, file.filename],
+      [...resized, `${file.filename}-thumbnail`],
+      [...resized, `${file.filename}-medium`],
+      [...resized, `${file.filename}-large`],
+    ];
+
+    for (const item of filesToDelete) {
+      const filePath = path.join(...item);
+
+      try {
+        // 查看文件是否存在
+        await access(filePath, constants.F_OK);
+      } catch (error) {
+        // 文件不存在，继续查找下一个文件
+        continue;
+      }
+
+      // 文件存在，删除文件
+      await unlink(filePath);
+    }
   }
 };

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import _ = require('lodash');
+import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
 import {
@@ -99,6 +100,13 @@ export const destroy = async (
   const { postId } = request.params;
 
   try {
+    // 查找内容相关的文件
+    const files = await getPostFiles(parseInt(postId, 10));
+    if (files.length) {
+      // 删除内容相关的文件
+      await deletePostFiles(files);
+    }
+
     const data = await deletePost(parseInt(postId, 10));
     response.send(data);
   } catch (error) {
