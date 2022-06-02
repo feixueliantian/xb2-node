@@ -136,9 +136,26 @@ export const destroy = async (
   next: NextFunction,
 ) => {
   const { commentId } = request.params;
+  const socketId = request.header('X-Socket-Id');
 
   try {
+    // 准备资源
+    const isReply = await isReplyComment(parseInt(commentId, 10));
+    const resourceType = isReply ? 'reply' : 'comment';
+    const resource = await getCommentById(parseInt(commentId, 10), {
+      resourceType,
+    });
+
+    // 删除评论
     const data = await deleteComment(parseInt(commentId, 10));
+
+    // 触发事件
+    const eventName = isReply ? 'commentReplyDeleted' : 'commentDeleted';
+    socketIoServer.emit(eventName, {
+      [resourceType]: resource,
+      socketId,
+    });
+
     return response.send(data);
   } catch (error) {
     return next(error);
