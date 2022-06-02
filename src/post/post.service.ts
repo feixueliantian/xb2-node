@@ -1,4 +1,5 @@
 import { connection } from '../app/database/mysql';
+import { TokenPayload } from '../auth/auth.interface';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
 
@@ -17,6 +18,7 @@ interface GetPostsOptions {
   sort: string;
   filter: GetPostsOptionsFilter;
   pagination: GetPostsOptionsPagination;
+  currentUser?: TokenPayload;
 }
 
 /**
@@ -45,11 +47,14 @@ export const getPosts = async (options: GetPostsOptions) => {
     sort,
     filter,
     pagination: { limit, offset },
+    currentUser,
   } = options;
   let params: any[] = [limit, offset];
   if (filter.params) {
     params = [filter.params, ...params];
   }
+
+  const { id: userId } = currentUser;
 
   const statement = `
     SELECT
@@ -60,7 +65,13 @@ export const getPosts = async (options: GetPostsOptions) => {
       ${sqlFragment.totalComments},
       ${sqlFragment.file},
       ${sqlFragment.tags},
-      ${sqlFragment.totalLikes}
+      ${sqlFragment.totalLikes},
+      (
+        SELECT COUNT(user_like_post.postId)
+        FROM user_like_post
+        WHERE user_like_post.postId = post.id
+          AND user_like_post.userId = ${userId}
+      ) AS liked
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.innerJoinOneFile}
