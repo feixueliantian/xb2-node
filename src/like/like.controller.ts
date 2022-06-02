@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { socketIoServer } from '../app/app.server';
 import { createUserLikePost, deleteUserLikePost } from './like.service';
 
 /**
@@ -14,6 +15,13 @@ export const storeUserLikePost = async (
 
   try {
     const data = await createUserLikePost(userId, parseInt(postId, 10));
+
+    // 触发事件
+    socketIoServer.emit('userLikePostCreated', {
+      postId: parseInt(postId, 10),
+      userId,
+    });
+
     return response.status(201).send(data);
   } catch (error) {
     return next(error);
