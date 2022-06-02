@@ -12,6 +12,7 @@ export const storeUserLikePost = async (
 ) => {
   const { postId } = request.params;
   const { id: userId } = request.user;
+  const socketId = request.header('X-Socket-Id');
 
   try {
     const data = await createUserLikePost(userId, parseInt(postId, 10));
@@ -20,6 +21,7 @@ export const storeUserLikePost = async (
     socketIoServer.emit('userLikePostCreated', {
       postId: parseInt(postId, 10),
       userId,
+      socketId,
     });
 
     return response.status(201).send(data);
@@ -38,6 +40,7 @@ export const destroyUserLikePost = async (
 ) => {
   const { postId } = request.params;
   const { id: userId } = request.user;
+  const socketId = request.header('X-Socket-Id');
 
   try {
     const data = await deleteUserLikePost(userId, parseInt(postId, 10));
@@ -46,6 +49,7 @@ export const destroyUserLikePost = async (
     socketIoServer.emit('userLikePostDeleted', {
       postId: parseInt(postId, 10),
       userId,
+      socketId,
     });
 
     return response.send(data);
