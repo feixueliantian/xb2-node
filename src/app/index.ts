@@ -10,6 +10,7 @@ import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
+import { currentUser } from '../auth/auth.middleware';
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use(
     exposedHeaders: 'X-Total-Count',
   }),
 );
+
+app.use(currentUser);
 
 app.use(express.json());
 

@@ -39,28 +39,42 @@ export const authGuard = (
   response: Response,
   next: NextFunction,
 ) => {
-  console.log('验证用户身份');
+  console.log('用户身份验证');
+  if (request.user.id === null) return next(new Error('UNAUTHORIZED'));
+  return next();
+};
+
+export const currentUser = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  let user: TokenPayload = {
+    id: null,
+    name: 'anonymous',
+  };
 
   try {
     // 提取 Authorization
     const authorization = request.get('Authorization');
-    if (!authorization) throw new Error();
 
     // 提取 JWT 令牌
     const token = authorization.replace('Bearer ', '');
-    if (!token) throw new Error();
 
     // 验证令牌
     const decoded = jwt.verify(token, PUBLIC_KEY, {
       algorithms: ['RS256'],
     });
 
-    request.user = decoded as TokenPayload;
-
-    next();
+    // 验证通过，将 request.user 设置为 token 中的用户信息
+    user = decoded as TokenPayload;
+    request.user = user;
   } catch (error) {
-    next(new Error('UNAUTHORIZED'));
+    // 验证失败，将 request.user 设置为匿名用户
+    request.user = user;
   }
+
+  return next();
 };
 
 interface AccessControlOptions {

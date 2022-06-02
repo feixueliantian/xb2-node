@@ -19,6 +19,7 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
+  console.log(request.user);
   try {
     const posts = await getPosts({
       sort: request.sort,
