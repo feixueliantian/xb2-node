@@ -20,12 +20,16 @@ export const sqlFragment = {
     ) as totalComments
   `,
   leftJoinOneFile: `
-      LEFT JOIN LATERAL (
-        SELECT * FROM file
-        WHERE file.postId = post.id
-        ORDER BY file.id DESC
-        LIMIT 1
-      ) AS file ON file.postId = post.id
+    LEFT JOIN LATERAL (
+      SELECT * FROM file
+      WHERE file.postId = post.id
+      ORDER BY file.id DESC
+      LIMIT 1
+    ) AS file ON file.postId = post.id
+  `,
+  innerJoinFile: `
+    INNER JOIN file
+      ON file.postId = post.id
   `,
   innerJoinOneFile: `
       INNER JOIN LATERAL (
