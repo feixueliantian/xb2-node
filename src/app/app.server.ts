@@ -18,10 +18,4 @@ export const socketIoServer = new Server(httpServer, {
   },
 });
 
-socketIoServer.on('connect', (socket) => {
-  socket.on('greet', (data) => {
-    console.log(data);
-  });
-});
-
 export default httpServer;
