@@ -87,7 +87,18 @@ export const getPosts = async (options: GetPostsOptions) => {
   return data;
 };
 
-export const getPostById = async (postId: number) => {
+interface GetPostByIdOptions {
+  currentUser?: TokenPayload;
+}
+
+export const getPostById = async (
+  postId: number,
+  options?: GetPostByIdOptions,
+) => {
+  const {
+    currentUser: { id: userId },
+  } = options;
+
   const statement = `
     SELECT
       post.id,
@@ -97,7 +108,13 @@ export const getPostById = async (postId: number) => {
       ${sqlFragment.totalComments},
       ${sqlFragment.file},
       ${sqlFragment.tags},
-      ${sqlFragment.totalLikes}
+      ${sqlFragment.totalLikes},
+      (
+        SELECT COUNT(user_like_post.postId)
+        FROM user_like_post
+        WHERE user_like_post.postId = post.id
+          AND user_like_post.userId = ${userId}
+      ) AS liked
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}

@@ -65,7 +65,9 @@ export const show = async (
   const { postId } = request.params;
 
   try {
-    const data = await getPostById(parseInt(postId, 10));
+    const data = await getPostById(parseInt(postId, 10), {
+      currentUser: request.user,
+    });
     if (!data) throw new Error('NOT_FOUND');
     return response.send(data);
   } catch (error) {
