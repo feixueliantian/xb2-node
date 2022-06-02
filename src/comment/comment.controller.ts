@@ -99,12 +99,28 @@ export const update = async (
 ) => {
   const { commentId } = request.params;
   const { content } = request.body;
+  const socketId = request.header('X-Socket-Id');
+
   const comment = {
     content,
   };
 
   try {
     const data = await updateComment(parseInt(commentId, 10), comment);
+
+    const isReply = await isReplyComment(parseInt(commentId, 10));
+    const resourceType = isReply ? 'reply' : 'comment';
+    const resource = await getCommentById(parseInt(commentId, 10), {
+      resourceType,
+    });
+
+    // 触发事件
+    const eventName = isReply ? 'commentReplyUpdated' : 'commentUpdated';
+    socketIoServer.emit(eventName, {
+      [resourceType]: resource,
+      socketId,
+    });
+
     return response.send(data);
   } catch (error) {
     return next(error);
