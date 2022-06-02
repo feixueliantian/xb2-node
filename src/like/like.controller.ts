@@ -41,6 +41,13 @@ export const destroyUserLikePost = async (
 
   try {
     const data = await deleteUserLikePost(userId, parseInt(postId, 10));
+
+    // 触发事件
+    socketIoServer.emit('userLikePostDeleted', {
+      postId: parseInt(postId, 10),
+      userId,
+    });
+
     return response.send(data);
   } catch (error) {
     return next(error);
