@@ -192,5 +192,5 @@ export const getCommentById = async (
   `;
 
   const [data] = await connection.promise().query(statement, params);
-  return data as any;
+  return data[0] as any;
 };
