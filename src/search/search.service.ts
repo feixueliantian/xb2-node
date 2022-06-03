@@ -93,11 +93,11 @@ export const searchCameras = async (options: searchCamerasOptions) => {
   const statement = `
     SELECT
       ${makeModelFiled} as camera,
-      COUNT(camera)
+      COUNT(${makeModelFiled}) as totalPosts
     FROM
       file
     WHERE
-      ${makeModelFiled} LIKE ?
+      ${makeModelFiled} LIKE ? COLLATE utf8mb4_unicode_ci
     GROUP BY
       ${makeModelFiled}
   `;
