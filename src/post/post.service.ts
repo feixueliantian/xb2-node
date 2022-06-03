@@ -15,16 +15,16 @@ export interface GetPostsOptionsPagination {
 }
 
 export enum PostStatus {
-  published,
-  draft,
-  archived,
+  published = 'published',
+  draft = 'draft',
+  archived = 'archived',
 }
 
-interface GetPostsOptions {
+export interface GetPostsOptions {
   sort: string;
   filter: GetPostsOptionsFilter;
   pagination: GetPostsOptionsPagination;
-  currentUser?: TokenPayload;
+  currentUser: TokenPayload;
   status: PostStatus;
 }
 

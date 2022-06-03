@@ -14,6 +14,7 @@ import {
   getPostsTotalCount,
   getPostById,
   PostStatus,
+  GetPostsOptions,
 } from './post.service';
 
 export const index = async (
@@ -21,24 +22,19 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
-  // 解构查询符
-  const { status = '' } = request.query as any;
+  const { status = '' } = request.query;
+
+  const options: GetPostsOptions = {
+    sort: request.sort,
+    filter: request.filter,
+    pagination: request.pagination,
+    currentUser: request.user,
+    status: PostStatus[status as string],
+  };
 
   try {
-    const posts = await getPosts({
-      sort: request.sort,
-      filter: request.filter,
-      pagination: request.pagination,
-      currentUser: request.user,
-      status,
-    });
-
-    const totalCount = await getPostsTotalCount({
-      sort: request.sort,
-      filter: request.filter,
-      pagination: request.pagination,
-      status,
-    });
+    const posts = await getPosts(options);
+    const totalCount = await getPostsTotalCount(options);
 
     response.header('X-TOTAL-COUNT', totalCount);
     response.send(posts);
