@@ -1,7 +1,13 @@
 import express = require('express');
 import * as postController from './post.controller';
 import { authGuard, accessControl } from '../auth/auth.middleware';
-import { sort, filter, paginate, validatePostsStatus } from './post.middleware';
+import {
+  sort,
+  filter,
+  paginate,
+  validatePostsStatus,
+  modeSwitcher,
+} from './post.middleware';
 import { POSTS_PER_PAGE } from '../app/app.config';
 
 const router = express.Router();
@@ -12,6 +18,7 @@ router.get(
   filter,
   paginate(POSTS_PER_PAGE),
   validatePostsStatus,
+  modeSwitcher,
   postController.index,
 );
 router.get('/posts/:postId', postController.show);
