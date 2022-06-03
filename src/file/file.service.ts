@@ -4,6 +4,8 @@ import { constants } from 'fs';
 import Jimp = require('jimp');
 import { connection } from '../app/database/mysql';
 import { FileModel } from './file.model';
+import { TokenPayload } from '../auth/auth.interface';
+import { getPostById, PostStatus } from '../post/post.service';
 
 /**
  * 存储文件信息
@@ -103,4 +105,24 @@ export const deletePostFiles = async (files: Array<FileModel>) => {
       await unlink(filePath);
     }
   }
+};
+
+/**
+ * 检查文件权限
+ */
+interface FileAccessControlOptions {
+  file: FileModel;
+  currentUser: TokenPayload;
+}
+
+export const fileAccessControl = async (options: FileAccessControlOptions) => {
+  const { file, currentUser } = options;
+
+  const isAdmin = currentUser.id === 1;
+  const isOwner = file.userId === currentUser.id;
+  const parentPost = await getPostById(file.postId, { currentUser });
+  const isPublished = parentPost.status === PostStatus.published;
+  const canAccess = isAdmin || isOwner || isPublished;
+
+  if (!canAccess) throw new Error('FORBIDDEN');
 };
