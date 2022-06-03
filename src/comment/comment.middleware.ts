@@ -21,7 +21,7 @@ export const filter = async (
     request.filter = {
       name: 'postComments',
       sql: 'comment.parentId IS NULL AND comment.postId = ?',
-      params: post as string,
+      params: [post as string],
     };
   }
 
@@ -30,7 +30,7 @@ export const filter = async (
     request.filter = {
       name: 'userComments',
       sql: 'comment.parentId IS NULL AND comment.userId = ?',
-      params: user as string,
+      params: [user as string],
     };
   }
 
@@ -39,7 +39,7 @@ export const filter = async (
     request.filter = {
       name: 'userReplied',
       sql: 'comment.parentId IS NOT NULL AND comment.userId = ?',
-      params: user as string,
+      params: [user as string],
     };
   }
 

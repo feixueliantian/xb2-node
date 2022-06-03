@@ -80,7 +80,7 @@ export const getComments = async (options: GetCommentsOptions) => {
 
   let params: Array<any> = [limit, offset];
   if (filter.params) {
-    params = [filter.params, ...params];
+    params = [...filter.params, ...params];
   }
 
   const statement = `
@@ -118,7 +118,7 @@ export const getCommentsTotalCount = async (options: GetCommentsOptions) => {
   let params: Array<any> = [];
 
   if (filter.params) {
-    params = [filter.params, ...params];
+    params = [...filter.params, ...params];
   }
 
   const statement = `
