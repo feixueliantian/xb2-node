@@ -82,6 +82,10 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '新密码不能与原密码相同';
       break;
+    case 'BAD_REQUEST':
+      statusCode = 400;
+      message = '无法处理您的请求';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';

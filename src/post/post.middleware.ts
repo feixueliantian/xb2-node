@@ -111,3 +111,24 @@ export const paginate = (itemsPerPage: number) => {
     next();
   };
 };
+
+/**
+ * 验证内容状态
+ */
+export const validatePostsStatus = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { status = '' } = request.query;
+
+  const isValidStatus = ['', 'published', 'draft', 'archived'].includes(
+    status as string,
+  );
+
+  if (isValidStatus) {
+    return next();
+  } else {
+    return next(new Error('BAD_REQUEST'));
+  }
+};
