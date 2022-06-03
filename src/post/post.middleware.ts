@@ -121,7 +121,10 @@ export const validatePostsStatus = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { status = '' } = request.query;
+  const { status: statusFromQuery = '' } = request.query;
+  const { status: statusFromBody = '' } = request.body;
+
+  const status = statusFromQuery || statusFromBody;
 
   const isValidStatus = ['', 'published', 'draft', 'archived'].includes(
     status as string,

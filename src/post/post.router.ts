@@ -22,11 +22,12 @@ router.get(
   postController.index,
 );
 router.get('/posts/:postId', postController.show);
-router.post('/posts', authGuard, postController.store);
+router.post('/posts', authGuard, validatePostsStatus, postController.store);
 router.patch(
   '/posts/:postId',
   authGuard,
   accessControl({ possession: true }),
+  validatePostsStatus,
   postController.update,
 );
 router.delete(

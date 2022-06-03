@@ -3,6 +3,7 @@ import _ = require('lodash');
 import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
+import { PostModel } from './post.model';
 import {
   getPosts,
   createPost,
@@ -48,11 +49,18 @@ export const store = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { title, content } = request.body;
+  const { title, content, status = PostStatus.draft } = request.body;
   const { id: userId } = request.user;
 
+  const post: PostModel = {
+    title,
+    content,
+    userId,
+    status,
+  };
+
   try {
-    const data = await createPost({ title, content, userId });
+    const data = await createPost(post);
     response.status(201).send(data);
   } catch (error) {
     next(error);
@@ -83,7 +91,7 @@ export const update = async (
   next: NextFunction,
 ) => {
   const { postId } = request.params;
-  const post = _.pick(request.body, ['title', 'content']);
+  const post = _.pick(request.body, ['title', 'content', 'status']);
 
   try {
     const data = await updatePost(parseInt(postId, 10), post);
