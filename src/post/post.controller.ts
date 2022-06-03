@@ -73,13 +73,22 @@ export const show = async (
   next: NextFunction,
 ) => {
   const { postId } = request.params;
+  const currentUser = request.user;
 
   try {
-    const data = await getPostById(parseInt(postId, 10), {
-      currentUser: request.user,
+    const post = await getPostById(parseInt(postId, 10), {
+      currentUser,
     });
-    if (!data) throw new Error('NOT_FOUND');
-    return response.send(data);
+    if (!post) throw new Error('NOT_FOUND');
+
+    const isAdmin = currentUser.id === 1;
+    const isOwner = currentUser.id === post.user.id;
+    const isPublished = post.status === PostStatus.published;
+    const canAccess = isAdmin || isOwner || isPublished;
+
+    if (!canAccess) throw new Error('FORBIDDEN');
+
+    return response.send(post);
   } catch (error) {
     return next(error);
   }
