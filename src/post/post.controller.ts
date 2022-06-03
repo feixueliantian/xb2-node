@@ -13,6 +13,7 @@ import {
   deletePostTag,
   getPostsTotalCount,
   getPostById,
+  PostStatus,
 } from './post.service';
 
 export const index = async (
@@ -20,19 +21,23 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
-  console.log(request.user);
+  // 解构查询符
+  const { status = '' } = request.query as any;
+
   try {
     const posts = await getPosts({
       sort: request.sort,
       filter: request.filter,
       pagination: request.pagination,
       currentUser: request.user,
+      status,
     });
 
     const totalCount = await getPostsTotalCount({
       sort: request.sort,
       filter: request.filter,
       pagination: request.pagination,
+      status,
     });
 
     response.header('X-TOTAL-COUNT', totalCount);

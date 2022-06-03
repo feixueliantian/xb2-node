@@ -14,19 +14,35 @@ export interface GetPostsOptionsPagination {
   offset: number;
 }
 
+export enum PostStatus {
+  published,
+  draft,
+  archived,
+}
+
 interface GetPostsOptions {
   sort: string;
   filter: GetPostsOptionsFilter;
   pagination: GetPostsOptionsPagination;
   currentUser?: TokenPayload;
+  status: PostStatus;
 }
 
 /**
  * 统计内容数量
  */
 export const getPostsTotalCount = async (options: GetPostsOptions) => {
-  const { filter } = options;
-  const params = [...filter.params];
+  const { filter, status } = options;
+
+  let params: Array<any> = [];
+  if (filter.params) {
+    params = [...filter.params];
+  }
+
+  // 发布状态
+  const whereStatus = status
+    ? `post.status = '${status}'`
+    : 'post.status IS NOT NULL';
 
   const statement = `
     SELECT COUNT(DISTINCT post.id) AS total
@@ -35,7 +51,7 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
     ${sqlFragment.innerJoinFile}
     ${sqlFragment.leftJoinTag}
     ${filter.name === 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter.sql}
+    WHERE ${filter.sql} AND ${whereStatus}
   `;
 
   const [data] = await connection.promise().query(statement, params);
@@ -48,19 +64,27 @@ export const getPosts = async (options: GetPostsOptions) => {
     filter,
     pagination: { limit, offset },
     currentUser,
+    status,
   } = options;
   let params: Array<any> = [limit, offset];
   if (filter.params) {
     params = [...filter.params, ...params];
   }
 
+  // 当前用户
   const { id: userId } = currentUser;
+
+  // 发布状态
+  const whereStatus = status
+    ? `post.status = '${status}'`
+    : 'post.status IS NOT NULL';
 
   const statement = `
     SELECT
       post.id,
       post.title,
       post.content,
+      post.status,
       ${sqlFragment.user},
       ${sqlFragment.totalComments},
       ${sqlFragment.file},
@@ -77,12 +101,13 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.innerJoinOneFile}
     ${sqlFragment.leftJoinTag}
     ${filter.name === 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter.sql}
+    WHERE ${filter.sql} AND ${whereStatus}
     GROUP BY post.id
     ORDER BY ${sort}
     LIMIT ?
     OFFSET ?
   `;
+
   const [data] = await connection.promise().query(statement, params);
   return data;
 };
