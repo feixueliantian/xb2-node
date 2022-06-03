@@ -105,3 +105,33 @@ export const searchCameras = async (options: searchCamerasOptions) => {
   const [data] = await connection.promise().query(statement, params);
   return data;
 };
+
+/**
+ * 搜索镜头
+ */
+interface searchLensOptions {
+  makeModel?: string;
+}
+
+export const searchLens = async (options: searchLensOptions) => {
+  const { makeModel } = options;
+
+  const params: Array<any> = [`%${makeModel}%`];
+
+  const makeModelFiled = `JSON_EXTRACT(file.metadata, "$.LensMake", "$.LensModel")`;
+
+  const statement = `
+    SELECT
+      ${makeModelFiled} as lens,
+      COUNT(${makeModelFiled}) as totalPosts
+    FROM
+      file
+    WHERE
+      ${makeModelFiled} LIKE ? COLLATE utf8mb4_unicode_ci
+    GROUP BY
+      ${makeModelFiled}
+  `;
+
+  const [data] = await connection.promise().query(statement, params);
+  return data;
+};
