@@ -6,7 +6,7 @@ import { sqlFragment } from './post.provider';
 export interface GetPostsOptionsFilter {
   name: string;
   sql: string;
-  params?: string;
+  params?: Array<string>;
 }
 
 export interface GetPostsOptionsPagination {
@@ -26,7 +26,7 @@ interface GetPostsOptions {
  */
 export const getPostsTotalCount = async (options: GetPostsOptions) => {
   const { filter } = options;
-  const params = [filter.params];
+  const params = [...filter.params];
 
   const statement = `
     SELECT COUNT(DISTINCT post.id) AS total
@@ -49,9 +49,9 @@ export const getPosts = async (options: GetPostsOptions) => {
     pagination: { limit, offset },
     currentUser,
   } = options;
-  let params: any[] = [limit, offset];
+  let params: Array<any> = [limit, offset];
   if (filter.params) {
-    params = [filter.params, ...params];
+    params = [...filter.params, ...params];
   }
 
   const { id: userId } = currentUser;

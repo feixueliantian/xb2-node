@@ -78,7 +78,7 @@ export const getComments = async (options: GetCommentsOptions) => {
     pagination: { limit, offset },
   } = options;
 
-  let params: Array<string | number> = [limit, offset];
+  let params: Array<any> = [limit, offset];
   if (filter.params) {
     params = [filter.params, ...params];
   }
@@ -115,7 +115,7 @@ export const getComments = async (options: GetCommentsOptions) => {
 export const getCommentsTotalCount = async (options: GetCommentsOptions) => {
   const { filter } = options;
 
-  let params: Array<number | string> = [];
+  let params: Array<any> = [];
 
   if (filter.params) {
     params = [filter.params, ...params];

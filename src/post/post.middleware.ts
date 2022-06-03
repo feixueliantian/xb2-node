@@ -38,7 +38,8 @@ export const filter = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { tag, user, action } = request.query;
+  const { tag, user, action, cameraMake, cameraModel, lensMake, lensModel } =
+    request.query;
 
   request.filter = {
     name: 'default',
@@ -50,7 +51,7 @@ export const filter = async (
     request.filter = {
       name: 'tagName',
       sql: 'tag.name = ?',
-      params: tag as string,
+      params: [tag as string],
     };
   }
 
@@ -59,7 +60,7 @@ export const filter = async (
     request.filter = {
       name: 'userPublished',
       sql: 'user.id = ?',
-      params: user as string,
+      params: [user as string],
     };
   }
 
@@ -68,7 +69,25 @@ export const filter = async (
     request.filter = {
       name: 'userLiked',
       sql: 'user_like_post.userId = ?',
-      params: user as string,
+      params: [user as string],
+    };
+  }
+
+  // 过滤相机
+  if (cameraMake && cameraModel) {
+    request.filter = {
+      name: 'camera',
+      sql: 'file.metadata->"$.Make" = ? AND file.metadata->"$.Model" = ?',
+      params: [cameraMake as string, cameraModel as string],
+    };
+  }
+
+  // 过滤镜头
+  if (lensMake && lensModel) {
+    request.filter = {
+      name: 'lens',
+      sql: 'file.metadata->"$.LensMake" = ? AND file.metadata->"$.LensModel" = ?',
+      params: [lensMake as string, lensModel as string],
     };
   }
 
