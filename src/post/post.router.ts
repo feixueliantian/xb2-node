@@ -24,7 +24,17 @@ router.get(
   postController.index,
 );
 router.get('/posts/:postId', postController.show);
-router.post('/posts', authGuard, validatePostsStatus, postController.store);
+router.post(
+  '/posts',
+  authGuard,
+  validatePostsStatus,
+  accessLog({
+    action: 'createPost',
+    resourceType: 'post',
+    payloadParam: 'body.title',
+  }),
+  postController.store,
+);
 router.patch(
   '/posts/:postId',
   authGuard,
