@@ -13,7 +13,7 @@ export const createAccessLog = async (accessLog: AccessLogModel) => {
 
   const [data] = await connection.promise().query(statement, accessLog);
 
-  socketIoServer.emit('accessLogCreated', accessLog);
+  socketIoServer.emit('accessLogCreated', accessLog.action);
 
   return data;
 };
