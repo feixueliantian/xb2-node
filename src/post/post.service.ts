@@ -151,6 +151,7 @@ export const getPostById = async (
       ${sqlFragment.file},
       ${sqlFragment.tags},
       ${sqlFragment.totalLikes},
+      ${sqlFragment.audit},
       (
         SELECT COUNT(user_like_post.postId)
         FROM user_like_post
@@ -161,6 +162,7 @@ export const getPostById = async (
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.leftJoinOneFile}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     WHERE post.id = ?
     GROUP BY post.id
   `;

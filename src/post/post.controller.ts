@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import _ = require('lodash');
 import { AuditLogStatus } from '../audit-log/audit-log.model';
+import { getAuditLogByResource } from '../audit-log/audit-log.service';
 import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
@@ -78,15 +79,23 @@ export const show = async (
   const currentUser = request.user;
 
   try {
+    // 调取内容
     const post = await getPostById(parseInt(postId, 10), {
       currentUser,
     });
     if (!post) throw new Error('NOT_FOUND');
 
+    // 调取审核日志
+    const [audit] = await getAuditLogByResource({
+      resourceId: post.id,
+      resourceType: 'post',
+    });
+
     const isAdmin = currentUser.id === 1;
     const isOwner = currentUser.id === post.user.id;
     const isPublished = post.status === PostStatus.published;
-    const canAccess = isAdmin || isOwner || isPublished;
+    const isApproved = audit && audit.status === AuditLogStatus.approved;
+    const canAccess = isAdmin || isOwner || (isPublished && isApproved);
 
     if (!canAccess) throw new Error('FORBIDDEN');
 
