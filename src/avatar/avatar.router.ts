@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { accessLog } from '../access-log/access-log.middleware';
 import { authGuard } from '../auth/auth.middleware';
 import * as avatarController from './avatar.controller';
 import { avatarInterceptor, avatarProcessor } from './avatar.middleware';
@@ -10,6 +11,10 @@ router.post(
   authGuard,
   avatarInterceptor,
   avatarProcessor,
+  accessLog({
+    action: 'createAvatar',
+    resourceType: 'avatar',
+  }),
   avatarController.store,
 );
 
