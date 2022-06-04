@@ -23,7 +23,15 @@ router.get(
   accessLog({ action: 'getPost', resourceType: 'post' }),
   postController.index,
 );
-router.get('/posts/:postId', postController.show);
+router.get(
+  '/posts/:postId',
+  accessLog({
+    action: 'getPostById',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+  }),
+  postController.show,
+);
 router.post(
   '/posts',
   authGuard,
