@@ -9,6 +9,7 @@ import {
   modeSwitcher,
 } from './post.middleware';
 import { POSTS_PER_PAGE } from '../app/app.config';
+import { accessLog } from '../access-log/access-log.middleware';
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.get(
   paginate(POSTS_PER_PAGE),
   validatePostsStatus,
   modeSwitcher,
+  accessLog({ action: 'getPost', resourceType: 'post' }),
   postController.index,
 );
 router.get('/posts/:postId', postController.show);
