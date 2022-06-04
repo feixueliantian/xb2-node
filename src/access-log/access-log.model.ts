@@ -10,7 +10,7 @@ export class AccessLogModel {
   origin?: string | string[];
   referer?: string;
   agent?: string;
-  language?: string;
+  language?: string | string[];
   originalUrl?: string;
   method?: string;
   query?: any;
