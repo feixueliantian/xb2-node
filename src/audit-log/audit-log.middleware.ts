@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { possess } from '../auth/auth.service';
 import { AuditLogStatus } from './audit-log.model';
+import { getAuditLogByResource } from './audit-log.service';
 
 /**
  * 审核日志守卫
@@ -30,22 +31,32 @@ export const auditLogGuard = async (
   // 管理员
   const isAdmin = userId === 1;
 
-  if (isAdmin) {
-    return next();
-  }
+  if (!isAdmin) {
+    try {
+      // 只有资源作者才能审核资源
+      const isOwner = await possess({ resourceId, resourceType, userId });
+      if (!isOwner) throw new Error('USER_DOSE_NOT_OWN_RESOURCE');
 
-  // 作者
-  try {
-    const isOwner = await possess({ resourceId, resourceType, userId });
-    if (isOwner) {
       // 资源作者审核资源的时候，只能将 status 设置为 pending
       request.body.status = AuditLogStatus.pending;
-      return next();
+    } catch (error) {
+      return next(error);
     }
+  }
+
+  // 检查审核日志的状态是否已经存在
+  try {
+    const [auditLog] = await getAuditLogByResource({
+      resourceType,
+      resourceId,
+    });
+
+    // 资源状态不能相同
+    const isSameStatue = auditLog && auditLog.status === request.body.status;
+    if (isSameStatue) throw new Error('BAD_REQUEST');
   } catch (error) {
     return next(error);
   }
 
-  // 其他人无权审核资源
-  return next(new Error('USER_DOSE_NOT_OWN_RESOURCE'));
+  return next();
 };
