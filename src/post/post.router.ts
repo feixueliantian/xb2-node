@@ -40,6 +40,11 @@ router.patch(
   authGuard,
   accessControl({ possession: true }),
   validatePostsStatus,
+  accessLog({
+    action: 'updatePost',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+  }),
   postController.update,
 );
 router.delete(
