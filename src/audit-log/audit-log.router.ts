@@ -6,5 +6,6 @@ import { auditLogGuard } from './audit-log.middleware';
 const router = Router();
 
 router.post('/audit-logs', authGuard, auditLogGuard, auditLogController.store);
+router.post('/revoke-audit', authGuard, auditLogController.revoke);
 
 export default router;
