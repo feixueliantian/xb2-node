@@ -1,4 +1,5 @@
 import { connection } from '../app/database/mysql';
+import { AuditLogStatus } from '../audit-log/audit-log.model';
 import { TokenPayload } from '../auth/auth.interface';
 import { PostModel } from './post.model';
 import { sqlFragment } from './post.provider';
@@ -26,13 +27,14 @@ export interface GetPostsOptions {
   pagination: GetPostsOptionsPagination;
   currentUser: TokenPayload;
   status: PostStatus;
+  auditStatus: AuditLogStatus;
 }
 
 /**
  * 统计内容数量
  */
 export const getPostsTotalCount = async (options: GetPostsOptions) => {
-  const { filter, status } = options;
+  const { filter, status, auditStatus } = options;
 
   let params: Array<any> = [];
   if (filter.params) {
@@ -44,14 +46,20 @@ export const getPostsTotalCount = async (options: GetPostsOptions) => {
     ? `post.status = '${status}'`
     : 'post.status IS NOT NULL';
 
+  // 审核状态
+  const whereAuditStatus = auditStatus
+    ? `AND audit.status = '${auditStatus}'`
+    : '';
+
   const statement = `
     SELECT COUNT(DISTINCT post.id) AS total
     FROM post
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.innerJoinFile}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     ${filter.name === 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter.sql} AND ${whereStatus}
+    WHERE ${filter.sql} AND ${whereStatus} ${whereAuditStatus}
   `;
 
   const [data] = await connection.promise().query(statement, params);
@@ -65,6 +73,7 @@ export const getPosts = async (options: GetPostsOptions) => {
     pagination: { limit, offset },
     currentUser,
     status,
+    auditStatus,
   } = options;
   let params: Array<any> = [limit, offset];
   if (filter.params) {
@@ -79,6 +88,11 @@ export const getPosts = async (options: GetPostsOptions) => {
     ? `post.status = '${status}'`
     : 'post.status IS NOT NULL';
 
+  // 审核状态
+  const whereAuditStatus = auditStatus
+    ? `AND audit.status = '${auditStatus}'`
+    : '';
+
   const statement = `
     SELECT
       post.id,
@@ -90,6 +104,7 @@ export const getPosts = async (options: GetPostsOptions) => {
       ${sqlFragment.file},
       ${sqlFragment.tags},
       ${sqlFragment.totalLikes},
+      ${sqlFragment.audit},
       (
         SELECT COUNT(user_like_post.postId)
         FROM user_like_post
@@ -100,8 +115,9 @@ export const getPosts = async (options: GetPostsOptions) => {
     ${sqlFragment.leftJoinUser}
     ${sqlFragment.innerJoinOneFile}
     ${sqlFragment.leftJoinTag}
+    ${sqlFragment.leftJoinOneAuditLog}
     ${filter.name === 'userLiked' ? sqlFragment.innerJoinUserLikePost : ''}
-    WHERE ${filter.sql} AND ${whereStatus}
+    WHERE ${filter.sql} AND ${whereStatus} ${whereAuditStatus}
     GROUP BY post.id
     ORDER BY ${sort}
     LIMIT ?

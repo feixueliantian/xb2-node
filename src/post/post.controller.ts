@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import _ = require('lodash');
+import { AuditLogStatus } from '../audit-log/audit-log.model';
 import { deletePostFiles, getPostFiles } from '../file/file.service';
 import { TagModel } from '../tag/tag.model';
 import { createTag, getTagByName } from '../tag/tag.service';
@@ -23,7 +24,7 @@ export const index = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { status = '' } = request.query;
+  const { status = '', auditStatus } = request.query;
 
   const options: GetPostsOptions = {
     sort: request.sort,
@@ -31,6 +32,7 @@ export const index = async (
     pagination: request.pagination,
     currentUser: request.user,
     status: PostStatus[status as string],
+    auditStatus: AuditLogStatus[auditStatus as string],
   };
 
   try {

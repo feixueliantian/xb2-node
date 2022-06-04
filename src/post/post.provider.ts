@@ -96,7 +96,7 @@ export const sqlFragment = {
       WHERE audit_log.resourceId = post.id
       ORDER BY audit_log.id DESC
       limit 1
-    ) AS audit ON post.id = audit_log.resourceId
+    ) AS audit ON post.id = audit.resourceId
   `,
   audit: `
     CAST(

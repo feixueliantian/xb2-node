@@ -16,7 +16,7 @@ export const defaultErrorHandler = (
   next: NextFunction,
 ) => {
   if (error.message) {
-    console.log('错误', error.message);
+    console.log('错误', error.message, error.sql);
   }
 
   let statusCode: number, message: string;
