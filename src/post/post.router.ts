@@ -51,6 +51,11 @@ router.delete(
   '/posts/:postId',
   authGuard,
   accessControl({ possession: true }),
+  accessLog({
+    action: 'deletePost',
+    resourceType: 'post',
+    resourceParamName: 'postId',
+  }),
   postController.destroy,
 );
 router.post(
