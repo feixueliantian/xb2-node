@@ -1,5 +1,6 @@
 import { socketIoServer } from '../app/app.server';
 import { connection } from '../app/database/mysql';
+import { AccessLogModel } from './access-log.model';
 
 /**
  * 创建访问日志
