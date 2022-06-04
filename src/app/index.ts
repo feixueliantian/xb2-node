@@ -9,6 +9,7 @@ import commentRouter from '../comment/comment.router';
 import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
 import searchRouter from '../search/search.router';
+import auditLogRouter from '../audit-log/audit-log.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
@@ -38,6 +39,7 @@ app.use(
   likeRouter,
   appRouter,
   searchRouter,
+  auditLogRouter,
 );
 
 app.use(defaultErrorHandler);
