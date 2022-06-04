@@ -47,5 +47,5 @@ export const auditLogGuard = async (
   }
 
   // 其他人无权审核资源
-  return next(new Error('USER_DOES_NOT_OWN_RESOURCE'));
+  return next(new Error('USER_DOSE_NOT_OWN_RESOURCE'));
 };
