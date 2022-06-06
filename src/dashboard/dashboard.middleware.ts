@@ -63,5 +63,5 @@ export const accessCountsGuard = async (
 
   if (!isAllowdAction) return next(new Error('BAD_REQUEST'));
 
-  next();
+  return next();
 };
