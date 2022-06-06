@@ -24,7 +24,7 @@ export const getAccessCounts = async (options: GetAccessCountsOptions) => {
     .join(',');
 
   // 允许的动作条件
-  const andWhereActionIn = `AND where action in ${allowedActions}`;
+  const andWhereActionIn = `AND action in (${allowedActions})`;
 
   const statement = `
     SELECT
