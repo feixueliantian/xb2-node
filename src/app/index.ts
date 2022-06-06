@@ -10,6 +10,7 @@ import avatarRouter from '../avatar/avatar.router';
 import likeRouter from '../like/like.router';
 import searchRouter from '../search/search.router';
 import auditLogRouter from '../audit-log/audit-log.router';
+import dashboardRouter from '../dashboard/dashboard.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
@@ -40,6 +41,7 @@ app.use(
   appRouter,
   searchRouter,
   auditLogRouter,
+  dashboardRouter,
 );
 
 app.use(defaultErrorHandler);
