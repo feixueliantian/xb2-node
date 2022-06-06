@@ -79,7 +79,7 @@ export const getAccessCountsByAction = async (
 ) => {
   const {
     action,
-    filter: { sql: whereDatetimeRange, params: dateTimeFormat },
+    filter: { sql: whereDatetimeRange, param: dateTimeFormat },
   } = options;
 
   const params = [action];
@@ -87,7 +87,7 @@ export const getAccessCountsByAction = async (
   const statement = `
     SELECT
       access_log.action,
-      DATE_FORMAT(access_log.created, ${dateTimeFormat}) as datetime
+      DATE_FORMAT(access_log.created, '${dateTimeFormat}') as datetime,
       COUNT(access_log.id) as value
     FROM
       access_log

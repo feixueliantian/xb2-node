@@ -28,11 +28,11 @@ export const accessCountsFilter = async (
       break;
     case '1-month':
       filter.sql = 'access_log.created > now() - INTERVAL 1 MONTH';
-      filter.param = '%Y%m%d%';
+      filter.param = '%Y%m%d';
       break;
     case '3-month':
       filter.sql = 'access_log.created > now() - INTERVAL 3 MONTH';
-      filter.param = '%Y%m%';
+      filter.param = '%Y%m';
       break;
     default:
       filter.sql = 'access_log.created > now() - INTERVAL 1 DAY';
