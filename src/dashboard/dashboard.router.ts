@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import * as dashboardController from './dashboard.controller';
-import { accessCountFilter } from './dashboard.middleware';
+import { accessCountsFilter } from './dashboard.middleware';
 
 const router = Router();
 router.get(
   '/dashboard/access-counts',
-  accessCountFilter,
+  accessCountsFilter,
   dashboardController.accessCountIndex,
 );
 

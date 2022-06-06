@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 /**
  * 过滤时间段
  */
-export const accessCountFilter = async (
+export const accessCountsFilter = async (
   request: Request,
   response: Response,
   next: NextFunction,
