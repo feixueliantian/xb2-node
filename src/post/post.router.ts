@@ -20,7 +20,7 @@ router.get(
   paginate(POSTS_PER_PAGE),
   validatePostsStatus,
   modeSwitcher,
-  accessLog({ action: 'getPost', resourceType: 'post' }),
+  accessLog({ action: 'getPosts', resourceType: 'post' }),
   postController.index,
 );
 router.get(
