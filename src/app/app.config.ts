@@ -22,3 +22,10 @@ export const COMMENTS_PER_PAGE = parseInt(process.env['COMMENTS_PER_PAGE'], 10);
 
 // 跨域
 export const ALLOW_ORIGIN = process.env['ALLOW_ORIGIN'];
+
+// 微信登录：网站应用
+export const {
+  WEIXIN_API_BASE_URL,
+  WEIXIN_WEBSITE_APP_ID,
+  WEIXIN_WEBSITE_APP_SECRET,
+} = process.env;
