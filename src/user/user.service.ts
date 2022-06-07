@@ -8,8 +8,12 @@ export const createUser = async (user: UserModel) => {
   `;
 
   const [data] = await connection.promise().query(statement, user);
-  return data;
+  return data as any;
 };
+
+export interface UserData extends UserModel {
+  avatar: number;
+}
 
 interface GetUserOptions {
   password?: boolean;
@@ -33,7 +37,7 @@ const getUser = (condition: string) => {
       `;
 
     const [data] = await connection.promise().query(statement, param);
-    return data[0];
+    return data[0] ? (data[0] as UserData) : null;
   };
 };
 
