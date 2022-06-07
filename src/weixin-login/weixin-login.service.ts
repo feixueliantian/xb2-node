@@ -1,8 +1,13 @@
+import path = require('path');
+import fs = require('fs');
+import Jimp = require('jimp');
 import {
   WEIXIN_WEBSITE_APP_ID,
   WEIXIN_WEBSITE_APP_SECRET,
 } from '../app/app.config';
-import { weixinApiHttpClient } from '../app/app.service';
+import { httpClient, weixinApiHttpClient } from '../app/app.service';
+import { UserData } from '../user/user.service';
+import { createAvatar } from '../avatar/avatar.service';
 
 /**
  * 微信登录：获取访问令牌
@@ -81,4 +86,63 @@ export const getWeixinUserInfo = async (options: GetWeixinUserInfoOptions) => {
 
   // 提供微信用户信息
   return data as WeixinUserInfo;
+};
+
+/**
+ * 微信登录：后期处理
+ */
+export interface WeixinLoginPostProcessOptions {
+  user?: UserData;
+  weixinUserInfo?: WeixinUserInfo;
+}
+
+export const weixinLoginPostProcess = async (
+  options: WeixinLoginPostProcessOptions,
+) => {
+  const {
+    user,
+    weixinUserInfo: { headimgurl, unionid },
+  } = options;
+
+  // 没有头像，用微信头像作为头像
+  if (!user.avatar) {
+    // 头像地址
+    const avatarUrl = headimgurl;
+
+    // 下载头像
+    const response = await httpClient.get(avatarUrl, {
+      responseType: 'stream',
+    });
+
+    // 准备头像文件信息
+    const mimetype = response.headers['content-type'];
+    const size = response.headers['content-length'];
+    const filename = unionid;
+
+    const filePath = path.join('uploads', 'avatar', filename);
+    const fileResizedPath = path.join('uploads', 'avatar', 'resized', filename);
+
+    // 创建头像文件
+    const fileWriter = fs.createWriteStream(filePath);
+    response.data.pipe(fileWriter);
+
+    // 处理头像文件
+    fileWriter.on('finish', async () => {
+      // 读取文件
+      const image = await Jimp.read(filePath);
+
+      // 调整尺寸
+      image.cover(256, 256).quality(100).write(`${fileResizedPath}-large`);
+      image.cover(128, 128).quality(100).write(`${fileResizedPath}-medium`);
+      image.cover(64, 64).quality(100).write(`${fileResizedPath}-small`);
+
+      // 保存头像数据
+      createAvatar({
+        userId: user.id,
+        mimetype,
+        filename,
+        size: parseInt(size, 10),
+      });
+    });
+  }
 };
