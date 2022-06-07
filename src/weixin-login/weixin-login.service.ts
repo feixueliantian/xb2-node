@@ -38,3 +38,47 @@ export const getWeixinAccessToken = async (code: string) => {
 
   return data as WeixinAccessToken;
 };
+
+/**
+ * 获取微信用户信息
+ */
+export interface GetWeixinUserInfoOptions {
+  access_token: string;
+  openid: string;
+}
+
+export interface WeixinUserInfo {
+  openid?: string;
+  nickname?: string;
+  sex?: number;
+  language?: string;
+  city?: string;
+  provice?: string;
+  country?: string;
+  headimgurl?: string;
+  privilege?: Array<string>;
+  unionid?: string;
+}
+
+export const getWeixinUserInfo = async (options: GetWeixinUserInfoOptions) => {
+  // 结构参数
+  const { access_token, openid } = options;
+
+  // 查询符
+  const userInfoQueryString = new URLSearchParams({
+    access_token,
+    openid,
+  });
+
+  // 请求微信用户信息
+  const { data } = await weixinApiHttpClient.get(
+    `userinfo?${userInfoQueryString}`,
+  );
+
+  if (!data.openid) {
+    throw new Error('BAD_REQUEST');
+  }
+
+  // 提供微信用户信息
+  return data as WeixinUserInfo;
+};
