@@ -13,6 +13,8 @@ import {
 
 /**
  * 微信登录守卫
+ * 获取正在登录的用户的微信账户信息
+ * 检查该微信账户是否与系统账户绑定
  */
 export const weixinLoginGuard = async (
   request: Request,
