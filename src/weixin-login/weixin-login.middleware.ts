@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { socketIoServer } from '../app/app.server';
-import { getUserMetaByWeixinUnionId } from '../user-meta/user-meta-service';
-import { getUserById } from '../user/user.service';
+import {
+  createUserMeta,
+  getUserMetaByWeixinUnionId,
+} from '../user-meta/user-meta-service';
+import { UserMetaType } from '../user-meta/user-meta.model';
+import { createUser, getUserById } from '../user/user.service';
 import {
   getWeixinAccessToken,
   getWeixinUserInfo,
@@ -52,4 +56,53 @@ export const weixinLoginGuard = async (
   }
 
   return next();
+};
+
+/**
+ * 微信登录关联器
+ */
+export interface WeixinLoginConnectorOptions {
+  isCreateUserRequired: boolean;
+}
+
+export const weixinLoginConnector = (
+  options: WeixinLoginConnectorOptions = { isCreateUserRequired: true },
+) => {
+  return async (request: Request, response: Response, next: NextFunction) => {
+    const { isCreateUserRequired } = options;
+
+    const { weixinUserInfo } = request.body;
+
+    let { user = null } = request;
+
+    try {
+      // 检查是否绑定过
+      const { unionid } = weixinUserInfo;
+      const userMeta = getUserMetaByWeixinUnionId(unionid);
+      if (userMeta) return next(new Error('WEIXIN_ACCOUNT_ALREADY_CONNECTED'));
+
+      // 需要创建新用户
+      if (isCreateUserRequired) {
+        const { name, password } = request.body;
+        const data = await createUser({ name, password });
+
+        // 获取新创建的用户
+        user = await getUserById(data.insertId);
+
+        // 设置请求用户
+        request.user = user;
+      }
+
+      // 关联账户
+      await createUserMeta({
+        userId: user.id,
+        type: UserMetaType.weixinUserInfo,
+        info: JSON.stringify(weixinUserInfo),
+      });
+    } catch (error) {
+      return next(error);
+    }
+
+    return next();
+  };
 };

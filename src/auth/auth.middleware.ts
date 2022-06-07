@@ -31,6 +31,9 @@ export const validateLoginData = async (
   // 在请求主体里添加用户
   request.body.user = user;
 
+  // 在请求中添加用户
+  request.user = user;
+
   next();
 };
 

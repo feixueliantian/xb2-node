@@ -86,13 +86,17 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '无法处理您的请求';
       break;
-    case 'CONNECT_ACCOUNT_REQUIRED':
-      statusCode = 400;
-      message = '需要关联账户';
-      break;
     case 'FORBIDDEN':
       statusCode = 403;
       message = '没有权限访问';
+      break;
+    case 'CONNECT_ACCOUNT_REQUIRED':
+      statusCode = 403;
+      message = '需要关联账户';
+      break;
+    case 'WEIXIN_ACCOUNT_ALREADY_CONNECTED':
+      statusCode = 400;
+      message = '微信账户已经绑定过用户';
       break;
     default:
       statusCode = 500;
