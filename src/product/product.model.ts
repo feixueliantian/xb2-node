@@ -3,6 +3,12 @@ export enum ProductType {
   subscription = 'subscription',
 }
 
+export enum ProductStatus {
+  published = 'published',
+  draft = 'draft',
+  archived = 'archived',
+}
+
 export interface ProductMeta {
   unit?: string;
   color?: string;
@@ -17,8 +23,9 @@ export class ProductModel {
   title?: string;
   description?: Array<string>;
   price?: number;
-  slaePrice?: number;
+  salePrice?: number;
   meta?: ProductMeta;
+  status?: ProductStatus;
   created?: Date;
   updated?: Date;
 }
