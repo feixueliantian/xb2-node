@@ -44,3 +44,20 @@ export const getProductByType = async (
 
   return data[0] as ProductModel;
 };
+
+/**
+ * 按照产品 id 获取产品
+ */
+export const getProductById = async (productId: number) => {
+  const statement = `
+    SELECT 
+      *
+    FROM
+      product
+    WHERE
+      product.id = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, productId);
+  return data[0] as ProductModel;
+};
