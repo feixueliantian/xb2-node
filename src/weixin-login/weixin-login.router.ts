@@ -21,7 +21,7 @@ router.get(
 );
 
 // 微信关联已有账户之后登录
-router.get(
+router.post(
   'weixin-login/connect',
   validateLoginData,
   weixinLoginConnector(),
