@@ -10,7 +10,7 @@ export interface getProductByTypeOptions {
 
 export const getProductByType = async (
   type: string,
-  options: getProductByTypeOptions,
+  options: getProductByTypeOptions = {},
 ) => {
   const { meta } = options;
   const params = [type];

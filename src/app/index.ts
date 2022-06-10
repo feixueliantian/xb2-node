@@ -12,6 +12,7 @@ import searchRouter from '../search/search.router';
 import auditLogRouter from '../audit-log/audit-log.router';
 import dashboardRouter from '../dashboard/dashboard.router';
 import weixinLoginRouter from '../weixin-login/weixin-login.router';
+import productionRouter from '../product/product.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
@@ -44,6 +45,7 @@ app.use(
   auditLogRouter,
   dashboardRouter,
   weixinLoginRouter,
+  productionRouter,
 );
 
 app.use(defaultErrorHandler);
