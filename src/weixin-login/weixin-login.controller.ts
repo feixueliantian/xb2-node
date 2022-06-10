@@ -91,7 +91,7 @@ export const weixinLoginCreateConnect = async (
     // 后期处理
     await weixinLoginPostProcess({ user, weixinUserInfo });
 
-    return response.send({ user, token });
+    return response.status(201).send({ user, token });
   } catch (error) {
     return next(error);
   }

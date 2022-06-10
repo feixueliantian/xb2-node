@@ -58,7 +58,7 @@ export interface WeixinUserInfo {
   sex?: number;
   language?: string;
   city?: string;
-  provice?: string;
+  province?: string;
   country?: string;
   headimgurl?: string;
   privilege?: Array<string>;

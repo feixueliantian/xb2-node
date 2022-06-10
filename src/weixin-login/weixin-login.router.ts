@@ -23,7 +23,7 @@ router.get(
 
 // 微信关联已有账户之后登录
 router.post(
-  'weixin-login/connect',
+  '/weixin-login/connect',
   validateLoginData,
   weixinLoginConnector(),
   accessLog({
@@ -35,7 +35,7 @@ router.post(
 
 // 微信关联新创建的用户之后登录
 router.post(
-  'weixin-login/create-connect',
+  '/weixin-login/create-connect',
   validateUserData,
   hashPassword,
   weixinLoginConnector({ isCreateUserRequired: true }),
