@@ -23,9 +23,9 @@ export const possess = async (options: PosessOptions) => {
   const { resourceId, resourceType, userId } = options;
 
   const statement = `
-    SELECT COUNT(${resourceType}.id) as count
-    FROM ${resourceType}
-    WHERE ${resourceType}.id = ? AND userId = ?
+    SELECT COUNT(\`${resourceType}\`.id) as count
+    FROM \`${resourceType}\`
+    WHERE \`${resourceType}\`.id = ? AND userId = ?
   `;
 
   const [data] = await connection
