@@ -14,6 +14,7 @@ import dashboardRouter from '../dashboard/dashboard.router';
 import weixinLoginRouter from '../weixin-login/weixin-login.router';
 import productionRouter from '../product/product.router';
 import paymentRouter from '../payment/payment.router';
+import orderRouter from '../order/order.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
@@ -48,6 +49,7 @@ app.use(
   weixinLoginRouter,
   productionRouter,
   paymentRouter,
+  orderRouter,
 );
 
 app.use(defaultErrorHandler);
