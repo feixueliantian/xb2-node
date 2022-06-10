@@ -68,3 +68,31 @@ export const weixinLoginConnect = async (
     return next(error);
   }
 };
+
+/**
+ * 微信登录：绑定新创建的用户之后登录
+ */
+export const weixinLoginCreateConnect = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const user = request.user as UserData;
+  const { weixinUserInfo } = request.body;
+
+  try {
+    // 用绑定的已有账户来登录，签发 token
+    const payload = {
+      id: user.id,
+      name: user.name,
+    };
+    const token = signToken({ payload });
+
+    // 后期处理
+    await weixinLoginPostProcess({ user, weixinUserInfo });
+
+    return response.send({ user, token });
+  } catch (error) {
+    return next(error);
+  }
+};
