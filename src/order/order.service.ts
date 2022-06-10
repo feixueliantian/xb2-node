@@ -24,9 +24,23 @@ export const getOrderById = async (orderId: number) => {
     FROM
       \`order\`
     WHERE
-      order.id = ?
+      \`order\`.id = ?
   `;
 
   const [data] = await connection.promise().query(statement, orderId);
   return data[0] as OrderModel;
+};
+
+/**
+ * 更新订单
+ */
+export const updateOrder = async (orderId: number, order: OrderModel) => {
+  const statement = `
+    UPDATE \`order\`
+    SET ?
+    WHERE \`order\`.id = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, [order, orderId]);
+  return data as any;
 };
