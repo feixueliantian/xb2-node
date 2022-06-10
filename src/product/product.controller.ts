@@ -16,3 +16,40 @@ export const showLicenseProduct = async (
     return next(error);
   }
 };
+
+/**
+ * 获取订阅产品
+ */
+export const showSubscriptionProduct = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = [];
+
+    const standardProduct = await getProductByType('subscription', {
+      meta: {
+        subscriptionType: 'standard',
+      },
+    });
+
+    if (standardProduct) {
+      data.push(standardProduct);
+    }
+
+    const proProduct = await getProductByType('subscription', {
+      meta: {
+        subscriptionType: 'pro',
+      },
+    });
+
+    if (proProduct) {
+      data.push(proProduct);
+    }
+
+    return response.send(data);
+  } catch (error) {
+    return next(error);
+  }
+};
