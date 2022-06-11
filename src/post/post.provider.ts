@@ -43,12 +43,16 @@ export const sqlFragment = {
     CAST(
       IF(
         COUNT(file.id),
-        GROUP_CONCAT(
-          DISTINCT JSON_OBJECT(
-            'id', file.id,
-            'width', file.width,
-            'height', file.height
-          )
+        CONCAT(
+          '[',
+          GROUP_CONCAT(
+            DISTINCT JSON_OBJECT(
+              'id', file.id,
+              'width', file.width,
+              'height', file.height
+            )
+          ),
+          ']'
         ),
         NULL
       ) AS JSON

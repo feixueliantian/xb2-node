@@ -89,12 +89,12 @@ export const getUserValidLicense = async (
  */
 export interface GetLicensesOptions {
   filters?: { user?: number };
-  paginations?: { limit?: number; offset?: number };
+  pagination?: { limit?: number; offset?: number };
 }
 
 export const getLicenses = async (options: GetLicensesOptions) => {
   const { user } = options.filters;
-  const { limit, offset } = options.paginations;
+  const { limit, offset } = options.pagination;
   const params = [user, limit, offset];
 
   const statement = `
@@ -116,7 +116,7 @@ export const getLicenses = async (options: GetLicensesOptions) => {
       license.status = 'valid'
       AND license.userId = ?
     GROUP BY license.id
-    ORDER BY license.DESC
+    ORDER BY license.id DESC
     LIMIT ?
     OFFSET ?
   `;
