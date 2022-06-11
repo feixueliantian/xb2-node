@@ -125,3 +125,24 @@ export const getLicenses = async (options: GetLicensesOptions) => {
   const [data] = await connection.promise().query(statement, params);
   return data as any;
 };
+
+/**
+ * 统计许可列表数量
+ */
+export const getLicensesTotalCount = async (options: GetLicensesOptions) => {
+  const { user } = options.filters;
+  const params = [user];
+
+  const statement = `
+    SELECT
+      COUNT(license.id) AS total
+    FROM
+      license
+    WHERE
+      license.status = 'valid'
+      AND license.userId = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, params);
+  return data[0].total;
+};
