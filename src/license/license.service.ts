@@ -33,3 +33,20 @@ export const updateLicense = async (
 
   return data as any;
 };
+
+/**
+ * 按照订单 ID 获取许可
+ */
+export const getLicenseByOrderId = async (orderId: number) => {
+  const statement = `
+    SELECT
+      *
+    FROM
+      license
+    WHERE
+      license.orderId = ?
+  `;
+
+  const [data] = await connection.promise().query(statement, orderId);
+  return data[0] as LicenseModel;
+};
