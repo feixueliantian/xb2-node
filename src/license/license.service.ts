@@ -1,6 +1,8 @@
 import { ResourceType } from '../app/app.enum';
 import { connection } from '../app/database/mysql';
 import { LicenseModel } from './license.model';
+import { sqlFragment as postSqlFragment } from '../post/post.provider';
+import { licenseSqlFragment } from './license.provider';
 
 /**
  * 创建许可
@@ -80,4 +82,46 @@ export const getUserValidLicense = async (
     .promise()
     .query(statement, [userId, resourceType, resourceId]);
   return data[0] as LicenseModel;
+};
+
+/**
+ * 调取许可列表
+ */
+export interface GetLicensesOptions {
+  filters?: { user?: number };
+  paginations?: { limit?: number; offset?: number };
+}
+
+export const getLicenses = async (options: GetLicensesOptions) => {
+  const { user } = options.filters;
+  const { limit, offset } = options.paginations;
+  const params = [user, limit, offset];
+
+  const statement = `
+    SELECT
+      license.id,
+      license.created,
+      ${postSqlFragment.user},
+      ${licenseSqlFragment.order},
+      ${licenseSqlFragment.resource},
+      ${postSqlFragment.file}
+    FROM
+      license
+    ${licenseSqlFragment.leftJoinLicenseUser}
+    ${licenseSqlFragment.leftJoinOrder}
+    ${licenseSqlFragment.leftJoinPost}
+    ${licenseSqlFragment.leftJoinResourceUser}
+    ${postSqlFragment.innerJoinFile}
+    WHERE
+      license.status = 'valid'
+      AND license.userId = ?
+    GROUP BY license.id
+    ORDER BY license.DESC
+    LIMIT ?
+    OFFSET ?
+  `;
+
+  // 执行查询
+  const [data] = await connection.promise().query(statement, params);
+  return data as any;
 };
