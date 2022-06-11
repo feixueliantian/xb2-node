@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { LicenseStatus } from '../license/license.model';
+import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
+import { ProductType } from '../product/product.model';
 import { createOrder, updateOrder } from './order.service';
 
 /**
@@ -11,17 +14,18 @@ export const store = async (
   response: Response,
   next: NextFunction,
 ) => {
-  const { order, resourceType, resourceId } = request.body;
-  const { user } = request;
+  const { order, resourceType, resourceId, product } = request.body;
+  const { id: userId } = request.user;
 
   try {
     // 创建订单
     const data = await createOrder(order);
+    const orderId = data.insertId;
 
     // 创建订单日志
     await createOrderLog({
-      userId: user.id,
-      orderId: data.insertId,
+      userId,
+      orderId,
       action: OrderLogAction.orderCreated,
       meta: JSON.stringify({
         ...order,
@@ -29,6 +33,17 @@ export const store = async (
         resourceId,
       }),
     });
+
+    // 创建许可
+    if (product.type === ProductType.license) {
+      await createLicense({
+        userId,
+        orderId,
+        resourceType,
+        resourceId,
+        status: LicenseStatus.pending,
+      });
+    }
 
     return response.status(201).send(data);
   } catch (error) {
