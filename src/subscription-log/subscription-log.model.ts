@@ -1,8 +1,11 @@
 export enum SubscriptionLogAction {
   create = 'create',
   upgrade = 'upgrade',
+  upgraded = 'upgraded',
   resubscribe = 'resubscribe',
+  resubscribed = 'resubscribed',
   renew = 'renew',
+  renewed = 'renewed',
   statusChanged = 'statusChanged',
 }
 export class SubscriptionLogModel {
