@@ -2,9 +2,14 @@ import dayjs = require('dayjs');
 import { connection } from '../app/database/mysql';
 import { OrderModel } from '../order/order.model';
 import { ProductModel } from '../product/product.model';
+import { getProductByType } from '../product/product.service';
 import { SubscriptionLogAction } from '../subscription-log/subscription-log.model';
 import { createSubscriptionLog } from '../subscription-log/subscription-log.service';
-import { SubscriptionModel, SubscriptionStatus } from './subscription.model';
+import {
+  SubscriptionModel,
+  SubscriptionStatus,
+  SubscriptionType,
+} from './subscription.model';
 
 /**
  * 创建订阅
@@ -109,6 +114,49 @@ export const processSubscription = async (
     if (subscriptionType === subscription.type && isExpried) {
       action = SubscriptionLogAction.resubscribe;
     }
+
+    // 升级
+    if (
+      subscription.type === SubscriptionType.standard &&
+      subscriptionType === SubscriptionType.pro &&
+      !isExpried
+    ) {
+      // 订阅剩余天数
+      const daysRemaining = Math.abs(
+        dayjs().diff(subscription.expired, 'days'),
+      );
+
+      // 专业订阅产品
+      const proSubscriptionProduct = await getProductByType('subscription', {
+        meta: {
+          subscriptionType: SubscriptionType.pro,
+        },
+      });
+
+      // 专业订阅金额
+      const proAmount =
+        (proSubscriptionProduct.salePrice / 365) * daysRemaining;
+
+      // 标准订阅产品
+      const standardSubscriptionProduct = await getProductByType(
+        'subscription',
+        {
+          meta: {
+            subscriptionType: SubscriptionType.standard,
+          },
+        },
+      );
+
+      // 剩余金额
+      const leftAmount =
+        (standardSubscriptionProduct.salePrice / 365) * daysRemaining;
+
+      // 升级应付金额
+      order.totalAmount = parseFloat((proAmount - leftAmount).toFixed(2));
+
+      // 订阅日志动作
+      action = SubscriptionLogAction.upgrade;
+    }
   }
 
   // 创建订阅日志
@@ -119,7 +167,10 @@ export const processSubscription = async (
     action,
     meta: JSON.stringify({
       subscriptionType,
-      totalAmount: order.totalAmount,
+      totalAmount: `${order.totalAmount}`,
     }),
   });
+
+  // 提供数据
+  return action === SubscriptionLogAction.upgrade ? { order } : null;
 };

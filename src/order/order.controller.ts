@@ -49,11 +49,25 @@ export const store = async (
 
     // 创建订阅
     if (product.type === ProductType.subscription) {
-      await processSubscription({
+      const result = await processSubscription({
         userId,
         order,
         product,
       });
+
+      if (result) {
+        await updateOrder(orderId, { totalAmount: result.order.totalAmount });
+
+        // 创建订单日志
+        await createOrderLog({
+          userId,
+          orderId,
+          action: OrderLogAction.orderUpdated,
+          meta: JSON.stringify({
+            totalAmount: result.order.totalAmount,
+          }),
+        });
+      }
     }
 
     return response.status(201).send(data);
