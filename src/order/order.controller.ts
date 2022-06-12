@@ -22,6 +22,7 @@ export const store = async (
     // 创建订单
     const data = await createOrder(order);
     const orderId = data.insertId;
+    order.id = orderId;
 
     // 创建订单日志
     await createOrderLog({
