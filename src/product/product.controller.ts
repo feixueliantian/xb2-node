@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { SubscriptionType } from '../subscription/subscription.model';
 import { getProductByType } from './product.service';
 
 /**
@@ -30,7 +31,7 @@ export const showSubscriptionProduct = async (
 
     const standardProduct = await getProductByType('subscription', {
       meta: {
-        subscriptionType: 'standard',
+        subscriptionType: SubscriptionType.standard,
       },
     });
 
@@ -40,7 +41,7 @@ export const showSubscriptionProduct = async (
 
     const proProduct = await getProductByType('subscription', {
       meta: {
-        subscriptionType: 'pro',
+        subscriptionType: SubscriptionType.pro,
       },
     });
 

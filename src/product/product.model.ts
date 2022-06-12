@@ -1,3 +1,5 @@
+import { SubscriptionType } from '../subscription/subscription.model';
+
 export enum ProductType {
   license = 'license',
   subscription = 'subscription',
@@ -13,7 +15,7 @@ export interface ProductMeta {
   unit?: string;
   color?: string;
   billingCycle?: string;
-  subscriptionType?: string;
+  subscriptionType?: SubscriptionType;
 }
 
 export class ProductModel {

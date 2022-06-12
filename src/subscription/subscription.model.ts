@@ -13,7 +13,6 @@ export enum SubscriptionStatus {
 export class SubscriptionModel {
   id?: number;
   userId?: number;
-  orderId?: number;
   type?: SubscriptionType;
   status?: SubscriptionStatus;
   created?: string;

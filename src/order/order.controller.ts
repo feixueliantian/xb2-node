@@ -4,6 +4,7 @@ import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
 import { ProductType } from '../product/product.model';
+import { processSubscription } from '../subscription/subscription.service';
 import { createOrder, updateOrder } from './order.service';
 
 /**
@@ -42,6 +43,15 @@ export const store = async (
         resourceType,
         resourceId,
         status: LicenseStatus.pending,
+      });
+    }
+
+    // 创建订阅
+    if (product.type === ProductType.subscription) {
+      await processSubscription({
+        userId,
+        order,
+        product,
       });
     }
 
