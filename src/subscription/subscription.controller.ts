@@ -1,7 +1,10 @@
 import dayjs = require('dayjs');
 import { Request, Response, NextFunction } from 'express';
 import { SubscriptionModel } from './subscription.model';
-import { getUserValidSubscription } from './subscription.service';
+import {
+  getSubscriptionHistory,
+  getUserValidSubscription,
+} from './subscription.service';
 
 /**
  * 有效订阅
@@ -32,6 +35,24 @@ export const validSubscription = async (
     }
 
     response.send(validSubscription);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * 订阅历史
+ */
+export const history = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { subscriptionId } = request.params;
+
+  try {
+    const history = await getSubscriptionHistory(parseInt(subscriptionId, 10));
+    response.send(history);
   } catch (error) {
     return next(error);
   }

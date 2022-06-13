@@ -200,7 +200,7 @@ export const getSubscriptionHistory = async (subscriptionId: number) => {
       subscription
     LEFT JOIN subscription_log AS log
       ON log.subscriptionId = subscription.id
-    LEFT JON \`order\`
+    LEFT JOIN \`order\`
       ON log.orderId = order.id
     WHERE
       order.status = 'completed'
