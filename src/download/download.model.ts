@@ -8,4 +8,5 @@ export class DownloadModel {
   resourceId?: number;
   created?: string;
   used?: string;
+  token?: string;
 }
