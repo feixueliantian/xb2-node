@@ -51,7 +51,7 @@ export const getDownloadByToken = async (token: string) => {
 /**
  * 更新下载
  */
-export const updateDownloadById = async (
+export const updateDownload = async (
   downloadId: number,
   download: DownloadModel,
 ) => {
