@@ -174,3 +174,42 @@ export const processSubscription = async (
   // 提供数据
   return action === SubscriptionLogAction.upgrade ? { order } : null;
 };
+
+/**
+ * 调取订阅历史
+ */
+export interface SubscriptionHistory {
+  id?: number;
+  action?: SubscriptionLogAction;
+  meta?: any;
+  created?: string;
+  orderId?: number;
+  totalAmount?: string;
+}
+
+export const getSubscriptionHistory = async (subscriptionId: number) => {
+  const statement = `
+    SELECT
+      log.id,
+      log.action,
+      log.meta,
+      log.created,
+      log.orderId,
+      order.totalAmount
+    FROM
+      subscription
+    LEFT JOIN subscription_log AS log
+      ON log.subscriptionId = subscription.id
+    LEFT JON \`order\`
+      ON log.orderId = order.id
+    WHERE
+      order.status = 'completed'
+      AND log.action IN ('create', 'renewed', 'upgraded', 'resubscribed')
+      AND subscription.id = ?
+    ORDER BY
+      log.id DESC
+  `;
+
+  const [data] = await connection.promise().query(statement, subscriptionId);
+  return data as Array<SubscriptionHistory>;
+};
