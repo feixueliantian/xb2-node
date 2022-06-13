@@ -27,7 +27,7 @@ export const createSubscription = async (subscription: SubscriptionModel) => {
 /**
  * 更新订阅
  */
-export const updateSubscriptino = async (
+export const updateSubscription = async (
   subscriptionId: number,
   subscription: SubscriptionModel,
 ) => {

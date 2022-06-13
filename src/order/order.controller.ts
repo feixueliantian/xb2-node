@@ -1,12 +1,26 @@
+import dayjs = require('dayjs');
 import { Request, Response, NextFunction } from 'express';
 import { connection } from '../app/database/mysql';
 import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
-import { ProductType } from '../product/product.model';
-import { SubscriptionModel } from '../subscription/subscription.model';
-import { processSubscription } from '../subscription/subscription.service';
+import { ProductModel, ProductType } from '../product/product.model';
+import { SubscriptionLogAction } from '../subscription-log/subscription-log.model';
+import {
+  createSubscriptionLog,
+  getSubscriptionLogByOrderId,
+} from '../subscription-log/subscription-log.service';
+import {
+  SubscriptionModel,
+  SubscriptionStatus,
+  SubscriptionType,
+} from '../subscription/subscription.model';
+import {
+  processSubscription,
+  updateSubscription,
+} from '../subscription/subscription.service';
+import { OrderModel } from './order.model';
 import { createOrder, updateOrder } from './order.service';
 
 /**
@@ -124,4 +138,100 @@ export const getSubscriptionById = async (subscriptionId: number) => {
 
   const [data] = await connection.promise().query(statement, subscriptionId);
   return data[0] as SubscriptionModel;
+};
+
+/**
+ * 处理订阅：后期
+ */
+export interface PostProcessSubsciption {
+  order: OrderModel;
+  product: ProductModel;
+}
+
+export const postProcessSubsciption = async (
+  options: PostProcessSubsciption,
+) => {
+  const { id: orderId, userId } = options.order;
+  const { subscriptionType } = options.product.meta;
+
+  // 订阅日志
+  const subscriptionLog = await getSubscriptionLogByOrderId(orderId);
+
+  // 找出订阅
+  const subscription = await getSubscriptionById(
+    subscriptionLog.subscriptionId,
+  );
+
+  // 订阅日志动作
+  let action: SubscriptionLogAction;
+
+  // 之前订阅类型
+  let preType: SubscriptionType;
+
+  // 订阅状态
+  const status = SubscriptionStatus.valid;
+
+  // 日期时间格式
+  const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+
+  // 新订阅
+  if (subscription.status === SubscriptionStatus.pending) {
+    // 设置新订阅的过期时间
+    subscription.expired = dayjs(Date.now())
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.statusChanged;
+    preType = null;
+  }
+
+  // 续订
+  if (
+    subscriptionType === subscription.type &&
+    subscriptionLog.action === SubscriptionLogAction.renew
+  ) {
+    subscription.expired = dayjs(subscription.expired)
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.renewed;
+  }
+
+  // 重订
+  if (
+    subscriptionType === subscription.type &&
+    subscriptionLog.action === SubscriptionLogAction.resubscribe
+  ) {
+    subscription.expired = dayjs(Date.now())
+      .add(1, 'year')
+      .format(dateTimeFormat);
+
+    action = SubscriptionLogAction.resubscribed;
+  }
+
+  // 升级
+  if (subscriptionLog.action === SubscriptionLogAction.upgrade) {
+    action = SubscriptionLogAction.upgraded;
+  }
+
+  // 更新订阅
+  await updateSubscription(subscription.id, {
+    type: subscriptionType,
+    status,
+    expired: subscription.expired,
+  });
+
+  // 创建订阅日志
+  await createSubscriptionLog({
+    userId,
+    subscriptionId: subscription.id,
+    orderId,
+    action,
+    meta: JSON.stringify({
+      status,
+      expired: dayjs(subscription.expired).toISOString(),
+      type: subscriptionType,
+      preType,
+    }),
+  });
 };
