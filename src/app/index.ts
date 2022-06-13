@@ -16,6 +16,7 @@ import productionRouter from '../product/product.router';
 import paymentRouter from '../payment/payment.router';
 import orderRouter from '../order/order.router';
 import licenseRouter from '../license/license.router';
+import subscriptionRouter from '../subscription/subscription.router';
 import appRouter from './app.router';
 import { defaultErrorHandler } from './app.middleware';
 import { currentUser } from '../auth/auth.middleware';
@@ -52,6 +53,7 @@ app.use(
   paymentRouter,
   orderRouter,
   licenseRouter,
+  subscriptionRouter,
 );
 
 app.use(defaultErrorHandler);
