@@ -1,7 +1,11 @@
 import express = require('express');
 import * as fileController from './file.controller';
 import { authGuard } from '../auth/auth.middleware';
-import { fileInterceptor, fileProcessor } from './file.middleware';
+import {
+  fileDownloadGuard,
+  fileInterceptor,
+  fileProcessor,
+} from './file.middleware';
 import { accessLog } from '../access-log/access-log.middleware';
 
 const router = express.Router();
@@ -26,6 +30,13 @@ router.get(
     resourceParamName: 'fileId',
   }),
   fileController.metadata,
+);
+
+// 文件下载
+router.get(
+  '/files/:fileId/download',
+  fileDownloadGuard,
+  fileController.download,
 );
 
 export default router;

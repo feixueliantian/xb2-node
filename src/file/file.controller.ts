@@ -120,3 +120,26 @@ export const metadata = async (
     next(error);
   }
 };
+
+/**
+ * 文件下载
+ */
+export const download = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { file } = request.body;
+
+  try {
+    const filePath = path.join('uploads', file.filename);
+
+    response.header({
+      'Content-Type': file.mimetype,
+    });
+
+    response.download(filePath, file.originalname);
+  } catch (error) {
+    return next(error);
+  }
+};
