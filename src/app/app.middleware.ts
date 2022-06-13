@@ -106,7 +106,7 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '下载过期了';
       break;
-    case 'DOWNLOAD_INVALID':
+    case 'INVALID_DOWNLOAD':
       statusCode = 400;
       message = '无效下载令牌';
       break;
