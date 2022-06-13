@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import { connection } from '../app/database/mysql';
 import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
 import { ProductType } from '../product/product.model';
+import { SubscriptionModel } from '../subscription/subscription.model';
 import { processSubscription } from '../subscription/subscription.service';
 import { createOrder, updateOrder } from './order.service';
 
@@ -105,4 +107,21 @@ export const update = async (
   } catch (error) {
     return next(error);
   }
+};
+
+/**
+ * 按 ID 获取订阅
+ */
+export const getSubscriptionById = async (subscriptionId: number) => {
+  const statement = `
+    SELECT
+      *
+    FROM
+      subscription
+    WHERE
+      subscription.id = ? 
+  `;
+
+  const [data] = await connection.promise().query(statement, subscriptionId);
+  return data[0] as SubscriptionModel;
 };
