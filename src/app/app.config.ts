@@ -30,3 +30,9 @@ export const {
   WEIXIN_WEBSITE_APP_ID,
   WEIXIN_WEBSITE_APP_SECRET,
 } = process.env;
+
+// 订阅
+export const STANDARD_SUBSCRIPTION_DOWNLOAD_LIMIT_PER_WEEK = parseInt(
+  process.env['STANDARD_SUBSCRIPTION_DOWNLOAD_LIMIT_PER_WEEK'],
+  10,
+);

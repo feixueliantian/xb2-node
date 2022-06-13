@@ -98,6 +98,18 @@ export const defaultErrorHandler = (
       statusCode = 400;
       message = '微信账户已经绑定过用户';
       break;
+    case 'DOWNLOAD_LIMIT_REACHED':
+      statusCode = 400;
+      message = '已达下载上限';
+      break;
+    case 'DOWNLOAD_EXPIRED':
+      statusCode = 400;
+      message = '下载过期了';
+      break;
+    case 'DOWNLOAD_INVALID':
+      statusCode = 400;
+      message = '无效下载令牌';
+      break;
     default:
       statusCode = 500;
       message = '服务除了点问题';
