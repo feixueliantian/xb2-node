@@ -233,3 +233,20 @@ export const postProcessSubsciption = async (
     }),
   });
 };
+
+/**
+ * 支付
+ */
+export const pay = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { order } = request.body;
+
+  try {
+    response.send(order);
+  } catch (error) {
+    return next(error);
+  }
+};
