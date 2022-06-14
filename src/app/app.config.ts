@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 config();
 
-export const { APP_PORT } = process.env;
+export const { APP_PORT, APP_NAME, APP_NAME_ALIAS } = process.env;
 
 export const {
   MYSQL_HOST,
