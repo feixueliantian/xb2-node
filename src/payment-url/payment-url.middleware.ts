@@ -30,7 +30,12 @@ export const paymentUrlGuard = async (
     await updatePaymentUrl(paymentUrl.id, {
       used: dayjs().format(DATE_TIME_FORMAT),
     });
+
+    // 设置请求
+    request.body.paymentUrl = paymentUrl;
   } catch (error) {
     return next(error);
   }
+
+  return next();
 };
