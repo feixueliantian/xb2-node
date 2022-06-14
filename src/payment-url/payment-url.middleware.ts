@@ -24,7 +24,7 @@ export const paymentUrlGuard = async (
 
     // 检查支付地址是否过期
     const isExpired = dayjs().subtract(2, 'hours').isAfter(paymentUrl.created);
-    if (!isExpired) throw new Error('PAYMENT_EXPIRED');
+    if (isExpired) throw new Error('PAYMENT_EXPIRED');
 
     // 更新支付地址，将 used 设置为当前时间
     await updatePaymentUrl(paymentUrl.id, {
