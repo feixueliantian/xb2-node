@@ -1,5 +1,6 @@
 import dayjs = require('dayjs');
 import { Request, Response, NextFunction } from 'express';
+import { DATE_TIME_FORMAT } from '../app/app.config';
 import { connection } from '../app/database/mysql';
 import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
@@ -171,15 +172,12 @@ export const postProcessSubsciption = async (
   // 订阅状态
   const status = SubscriptionStatus.valid;
 
-  // 日期时间格式
-  const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
-
   // 新订阅
   if (subscription.status === SubscriptionStatus.pending) {
     // 设置新订阅的过期时间
     subscription.expired = dayjs(Date.now())
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.statusChanged;
     preType = null;
@@ -192,7 +190,7 @@ export const postProcessSubsciption = async (
   ) {
     subscription.expired = dayjs(subscription.expired)
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.renewed;
   }
@@ -204,7 +202,7 @@ export const postProcessSubsciption = async (
   ) {
     subscription.expired = dayjs(Date.now())
       .add(1, 'year')
-      .format(dateTimeFormat);
+      .format(DATE_TIME_FORMAT);
 
     action = SubscriptionLogAction.resubscribed;
   }

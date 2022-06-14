@@ -8,6 +8,7 @@ import {
   getDownloadByToken,
   updateDownload,
 } from '../download/download.service';
+import { DATE_TIME_FORMAT } from '../app/app.config';
 
 /**
  * 文件过滤器
@@ -105,7 +106,7 @@ export const fileDownloadGuard = async (
 
     // 更新下载
     await updateDownload(download.id, {
-      used: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      used: dayjs().format(DATE_TIME_FORMAT),
     });
 
     // 设置请求
