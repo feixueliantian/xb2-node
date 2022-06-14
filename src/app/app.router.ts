@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { postProcessSubsciption } from '../order/order.controller';
 import { getOrderById } from '../order/order.service';
+import { paymentRecived } from '../payment/payment.service';
 import { ProductType } from '../product/product.model';
 import { getProductById } from '../product/product.service';
 import {
@@ -33,15 +34,9 @@ router.post('/echo', async (request, response) => {
   response.send(userMeta);
 });
 
-router.post('/pay/:orderId', async (request, response) => {
-  const { orderId } = request.params;
-  const order = await getOrderById(parseInt(orderId, 10));
-  const product = await getProductById(order.productId);
-
-  if (product.type === ProductType.subscription) {
-    postProcessSubsciption({ order, product });
-  }
-
+router.post('/payments/notify', async (request, response) => {
+  // const { orderId } = request.body;
+  // paymentRecived(orderId, { message: '通知数据' });
   response.sendStatus(200);
 });
 
