@@ -103,3 +103,30 @@ export const updateOrderGuard = async (
   // 下一步
   return next();
 };
+
+/**
+ * 支付订单守卫
+ */
+export const payOrderGuard = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { orderId } = request.params;
+  const { id: userId } = request.user;
+
+  try {
+    const order = await getOrderById(parseInt(orderId, 10));
+    const isValidOrder = order && order.status === OrderStatus.pending;
+    if (!isValidOrder) throw new Error('BAD_REQUEST');
+
+    const isOwner = order.userId === userId;
+    if (!isOwner) throw new Error('FORBIDDEN');
+
+    request.body.order = order;
+  } catch (error) {
+    return next(error);
+  }
+
+  return next();
+};
