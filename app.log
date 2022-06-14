@@ -1,3 +1,6 @@
 10:18:36 INFO - 测试一下 ~~
 10:18:36 ERROR - 测试一下 ~~
 10:18:36 DEBUG - 测试一下 ~~
+10:35:07 INFO - xmlData <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<message>你好 ~</message>
+10:35:07 DEBUG - data { message: '你好 ~' }

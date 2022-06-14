@@ -1,6 +1,7 @@
 import axios from 'axios';
 import ShortUniqueId from 'short-unique-id';
 import log4js = require('log4js');
+import xml2js = require('xml2js');
 import { WEIXIN_API_BASE_URL } from './app.config';
 
 /**
@@ -43,3 +44,13 @@ log4js.configure({
 });
 
 export const logger = log4js.getLogger();
+
+/**
+ * XML 解析器
+ */
+export const xmlParser = new xml2js.Parser({ explicitArray: false });
+
+/**
+ * XML 构建器
+ */
+export const xmlBuilder = new xml2js.Builder();
