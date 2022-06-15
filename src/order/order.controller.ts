@@ -1,6 +1,7 @@
 import dayjs = require('dayjs');
 import { Request, Response, NextFunction } from 'express';
 import { DATE_TIME_FORMAT } from '../app/app.config';
+import { socketIoServer } from '../app/app.server';
 import { connection } from '../app/database/mysql';
 import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
@@ -150,6 +151,7 @@ export const getSubscriptionById = async (subscriptionId: number) => {
 export interface PostProcessSubsciption {
   order: OrderModel;
   product: ProductModel;
+  socketId: string;
 }
 
 export const postProcessSubsciption = async (
@@ -157,6 +159,7 @@ export const postProcessSubsciption = async (
 ) => {
   const { id: orderId, userId } = options.order;
   const { subscriptionType } = options.product.meta;
+  const { socketId } = options;
 
   // 订阅日志
   const subscriptionLog = await getSubscriptionLogByOrderId(orderId);
@@ -174,6 +177,9 @@ export const postProcessSubsciption = async (
 
   // 订阅状态
   const status = SubscriptionStatus.valid;
+
+  // 有效 SocketId
+  const isValidSocketId = socketId && socketId !== 'NULL';
 
   // 新订阅
   if (subscription.status === SubscriptionStatus.pending) {
@@ -235,6 +241,17 @@ export const postProcessSubsciption = async (
       preType,
     }),
   });
+
+  // 实时事件
+  if (isValidSocketId) {
+    socketIoServer.to(socketId).emit('subscriptionChanged', {
+      ...subscription,
+      type: subscriptionType,
+      status,
+      expired: subscription.expired,
+      action,
+    });
+  }
 };
 
 /**

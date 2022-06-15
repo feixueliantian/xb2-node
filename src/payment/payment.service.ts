@@ -1,3 +1,4 @@
+import { socketIoServer } from '../app/app.server';
 import { connection } from '../app/database/mysql';
 import { LicenseStatus } from '../license/license.model';
 import { getLicenseByOrderId, updateLicense } from '../license/license.service';
@@ -73,6 +74,10 @@ export const paymentRecived = async (orderId: number, paymentResult: any) => {
 
   if (!isValidProduct) return;
 
+  // SocketId
+  const socketId = paymentResult.attach || paymentResult.passback_params;
+  const isValidSocketId = socketId && socketId !== 'NULL';
+
   // 许可产品
   if (product.type === ProductType.license) {
     const license = await getLicenseByOrderId(order.id);
@@ -83,10 +88,17 @@ export const paymentRecived = async (orderId: number, paymentResult: any) => {
     await updateLicense(license.id, {
       status: LicenseStatus.valid,
     });
+
+    if (isValidSocketId) {
+      socketIoServer.to(socketId).emit('licenseStatusChanged', {
+        ...license,
+        status: LicenseStatus.valid,
+      });
+    }
   }
 
   // 订阅产品
   if (product.type === ProductType.subscription) {
-    await postProcessSubsciption({ order, product });
+    await postProcessSubsciption({ order, product, socketId });
   }
 };
