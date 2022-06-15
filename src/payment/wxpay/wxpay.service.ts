@@ -15,7 +15,13 @@ import {
   WXPAY_NOTIFY_URL,
 } from '../../app/app.config';
 import { OrderModel } from '../../order/order.model';
-import { httpClient, uid, xmlBuilder, xmlParser } from '../../app/app.service';
+import {
+  httpClient,
+  logger,
+  uid,
+  xmlBuilder,
+  xmlParser,
+} from '../../app/app.service';
 
 /**
  * 微信支付：签名
@@ -129,6 +135,8 @@ export const wxpay = async (order: OrderModel, request: Request) => {
   const { xml: prepayResult } = await xmlParser.parseStringPromise(
     response.data,
   );
+
+  logger.debug('微信支付统一下单结果：', prepayResult);
 
   if (prepayResult.return_code === 'FAIL') {
     throw new Error(prepayResult.return_msg);

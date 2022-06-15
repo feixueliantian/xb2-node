@@ -6,6 +6,8 @@ import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
+import { PaymentName } from '../payment/payment.model';
+import { wxpay } from '../payment/wxpay/wxpay.service';
 import { ProductModel, ProductType } from '../product/product.model';
 import { SubscriptionLogAction } from '../subscription-log/subscription-log.model';
 import {
@@ -237,15 +239,38 @@ export const postProcessSubsciption = async (
 /**
  * 支付
  */
+export interface PrepayResult {
+  codeUrl?: string;
+  paymentUrl?: string;
+  payment?: PaymentName;
+}
+
 export const pay = async (
   request: Request,
   response: Response,
   next: NextFunction,
 ) => {
   const { order } = request.body;
+  const { id: userId } = request.user;
 
   try {
-    response.send(order);
+    const data: PrepayResult = {};
+
+    // 微信支付
+    if (order.payment === PaymentName.wxpay) {
+      const wxpayResult = await wxpay(order, request);
+      data.codeUrl = wxpayResult.code_url;
+      data.payment = PaymentName.wxpay;
+
+      await createOrderLog({
+        userId,
+        orderId: order.id,
+        action: OrderLogAction.orderUpdated,
+        meta: JSON.stringify(wxpayResult),
+      });
+    }
+
+    response.send(data);
   } catch (error) {
     return next(error);
   }
