@@ -10,15 +10,17 @@ import {
   ALIPAY_GATEWAY,
   ALIPAY_NOTIFY_URL,
   ALIPAY_RETURN_URL,
+  ALIPAY_WAP_PAY_BASE_URL,
   APP_NAME,
   DATE_TIME_FORMAT,
 } from '../../app/app.config';
 import { uid } from '../../app/app.service';
+import { createPaymentUrl } from '../../payment-url/payment-url.service';
 
 /**
  * 支付宝：请求参数
  */
-export const alipayRequestParams = async (
+export const alipayRequestParams = (
   order: OrderModel,
   method: AlipayMethod,
   request: Request,
@@ -143,4 +145,49 @@ export const alipayRequestUrl = (
 
   const requestUrl = `${ALIPAY_GATEWAY}?${requestParamsString}`;
   return requestUrl;
+};
+
+/**
+ * 支付宝
+ */
+export const alipay = async (order: OrderModel, request: Request) => {
+  // 请求参数
+  const pagePayRequestParams = alipayRequestParams(
+    order,
+    AlipayMethod.page,
+    request,
+  );
+
+  const wapPayRequestParams = alipayRequestParams(
+    order,
+    AlipayMethod.wap,
+    request,
+  );
+
+  // 签名
+  const pagePaySign = alipaySign(pagePayRequestParams);
+  const wapPaySign = alipaySign(wapPayRequestParams);
+
+  // 请求地址
+  const pagePayRequestUrl = alipayRequestUrl(pagePayRequestParams, pagePaySign);
+  const wapPayRequestUrl = alipayRequestUrl(wapPayRequestParams, wapPaySign);
+
+  // 随机字符
+  const token = uid();
+
+  // 支付地址
+  await createPaymentUrl({
+    orderId: order.id,
+    token,
+    url: wapPayRequestUrl,
+  });
+
+  const paymentUrl = `${ALIPAY_WAP_PAY_BASE_URL}/payment-url?token=${token}`;
+
+  return {
+    // 支付宝账户密码支付地址
+    pagePayRequestUrl,
+    // 支付宝手机支付地址
+    paymentUrl,
+  };
 };

@@ -1,6 +1,6 @@
 export class PaymentUrlModel {
   id?: number;
-  order?: number;
+  orderId?: number;
   token?: string;
   url?: string;
   created?: string;

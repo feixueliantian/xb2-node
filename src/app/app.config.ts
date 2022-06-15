@@ -56,7 +56,7 @@ export const {
   ALIPAY_NOTIFY_URL,
   ALIPAY_RETURN_URL,
   ALIPAY_GATEWAY,
-  ALIPAY_WEP_PAY_BASE_URL,
+  ALIPAY_WAP_PAY_BASE_URL,
 } = process.env;
 
 export let { ALIPAY_PUBLIC_KEY, ALIPAY_APP_PRIVATE_KEY } = process.env;
