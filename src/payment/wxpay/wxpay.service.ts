@@ -32,7 +32,7 @@ export const wxpaySign = (
 ) => {
   // 1. 排序
   const sortedData = {};
-  const keys = Object.keys(data);
+  const keys = Object.keys(data).sort();
   for (const key of keys) {
     sortedData[key] = data[key];
   }

@@ -6,6 +6,7 @@ import { OrderModel } from '../../order/order.model';
 import { AlipayMethod, AlipayRequestParams } from './alipay.interface';
 import {
   ALIPAY_APP_ID,
+  ALIPAY_APP_PRIVATE_KEY,
   ALIPAY_NOTIFY_URL,
   ALIPAY_RETURN_URL,
   APP_NAME,
@@ -92,4 +93,37 @@ export const alipayRequestParams = async (
   };
 
   return requestParams;
+};
+
+/**
+ * 支付宝：签名预处理
+ */
+export const alipayPreSign = (data: AlipayRequestParams) => {
+  // 排序
+  const sortedData = {};
+  const keys = Object.keys(data).sort();
+  for (const key of keys) {
+    sortedData[key] = data[key].trim();
+  }
+
+  // 查询符
+  const dataString = querystring.stringify(sortedData, null, null, {
+    encodeURIComponent: querystring.unescape,
+  });
+
+  return dataString;
+};
+
+/**
+ * 支付宝：签名
+ */
+export const alipaySign = (data: AlipayRequestParams) => {
+  const dataString = alipayPreSign(data);
+
+  const sign = crypto
+    .createSign('sha256')
+    .update(dataString)
+    .sign(ALIPAY_APP_PRIVATE_KEY, 'base64');
+
+  return sign;
 };
