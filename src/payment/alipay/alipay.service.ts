@@ -191,3 +191,22 @@ export const alipay = async (order: OrderModel, request: Request) => {
     paymentUrl,
   };
 };
+
+/**
+ * 支付宝：验证支付结果
+ */
+export const alipayVerifyPaymentResult = (data: any) => {
+  const { sign } = data;
+
+  delete data.sign;
+  delete data.sign_type;
+
+  const dataString = alipayPreSign(data);
+
+  const result = crypto
+    .createVerify('sha256')
+    .update(dataString)
+    .verify(ALIPAY_APP_PRIVATE_KEY, sign, 'base64');
+
+  return result;
+};
