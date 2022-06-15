@@ -37,7 +37,11 @@ app.use(currentUser);
 
 app.use(express.json());
 
+// 处理 XML
 app.use(express.text({ type: 'text/xml' }));
+
+// 处理 Form
+app.use(express.urlencoded({ extended: true }));
 
 app.use(
   postRouter,

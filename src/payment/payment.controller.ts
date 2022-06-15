@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger, xmlBuilder, xmlParser } from '../app/app.service';
+import { alipayVerifyPaymentResult } from './alipay/alipay.service';
 import { getPayments, paymentRecived } from './payment.service';
 import { WxpayPaymentResult } from './wxpay/wxpay.interface';
 import { wxpayVerifyPaymentResult } from './wxpay/wxpay.service';
@@ -68,11 +69,23 @@ export const alipayNotify = async (
 ) => {
   try {
     // 1. 处理通知数据
-    // 2. 验证通知数据
-    // 3. 处理完成付款
-    // 4. 作出响应
+    const paymentResult = request.body;
 
-    response.send('收到');
+    logger.debug('支付宝支付结果：', paymentResult);
+
+    // 2. 验证通知数据
+    const isValid = alipayVerifyPaymentResult(paymentResult);
+    const orderId = paymentResult.out_trade_no.split('_')[1];
+
+    // 3. 处理完成付款
+    if (isValid) {
+      paymentRecived(parseInt(orderId, 10), paymentResult);
+    }
+
+    // 4. 作出响应
+    const responseData = isValid ? 'success' : 'failure';
+
+    response.send(responseData);
   } catch (error) {
     return next(error);
   }
