@@ -20,6 +20,7 @@ PUBLIC_KEY = Buffer.from(PUBLIC_KEY, 'base64').toString();
 export const POSTS_PER_PAGE = parseInt(process.env['POSTS_PER_PAGE'], 10);
 export const COMMENTS_PER_PAGE = parseInt(process.env['COMMENTS_PER_PAGE'], 10);
 export const LICENSES_PER_PAGE = parseInt(process.env['LICENSES_PER_PAGE'], 10);
+export const ORDERS_PER_PAGE = parseInt(process.env['ORDERS_PER_PAGE'], 10);
 
 // 跨域
 export const ALLOW_ORIGIN = process.env['ALLOW_ORIGIN'];
