@@ -6,6 +6,7 @@ import { LicenseStatus } from '../license/license.model';
 import { createLicense } from '../license/license.service';
 import { OrderLogAction } from '../order-log/order-log.model';
 import { createOrderLog } from '../order-log/order-log.service';
+import { alipay } from '../payment/alipay/alipay.service';
 import { PaymentName } from '../payment/payment.model';
 import { wxpay } from '../payment/wxpay/wxpay.service';
 import { ProductModel, ProductType } from '../product/product.model';
@@ -241,7 +242,7 @@ export const postProcessSubsciption = async (
  */
 export interface PrepayResult {
   codeUrl?: string;
-  paymentUrl?: string;
+  offSiteUrl?: string;
   payment?: PaymentName;
 }
 
@@ -267,6 +268,22 @@ export const pay = async (
         orderId: order.id,
         action: OrderLogAction.orderUpdated,
         meta: JSON.stringify(wxpayResult),
+      });
+    }
+
+    // 支付宝
+    if (order.payment === PaymentName.alipay) {
+      const alipayResult = await alipay(order, request);
+
+      data.codeUrl = alipayResult.paymentUrl;
+      data.payment = PaymentName.alipay;
+      data.offSiteUrl = alipayResult.pagePayRequestUrl;
+
+      await createOrderLog({
+        userId,
+        orderId: order.id,
+        action: OrderLogAction.orderUpdated,
+        meta: JSON.stringify(alipayResult),
       });
     }
 
