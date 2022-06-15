@@ -1,6 +1,7 @@
 import querystring = require('querystring');
 import crypto = require('crypto');
 import { WxpayOrder, WxpayPaymentResult } from './wxpay.interface';
+import { WXPAY_KEY } from '../../app/app.config';
 
 /**
  * 微信支付：签名
@@ -32,4 +33,20 @@ export const wxpaySign = (
     .toUpperCase();
 
   return sign;
+};
+
+/**
+ * 微信支付：验证微信服务器发过来的支付结果通知是否有效
+ */
+export const wxpayVerifyPaymentResult = async (
+  paymentResult: WxpayPaymentResult,
+) => {
+  const { sign } = paymentResult;
+  delete paymentResult.sign;
+
+  const selfSign = wxpaySign(paymentResult, WXPAY_KEY);
+
+  const isValidSign = sign === selfSign;
+
+  return isValidSign;
 };
