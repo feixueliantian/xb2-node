@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { query, Request } from 'express';
 import querystring = require('querystring');
 import crypto = require('crypto');
 import dayjs = require('dayjs');
@@ -7,6 +7,7 @@ import { AlipayMethod, AlipayRequestParams } from './alipay.interface';
 import {
   ALIPAY_APP_ID,
   ALIPAY_APP_PRIVATE_KEY,
+  ALIPAY_GATEWAY,
   ALIPAY_NOTIFY_URL,
   ALIPAY_RETURN_URL,
   APP_NAME,
@@ -126,4 +127,20 @@ export const alipaySign = (data: AlipayRequestParams) => {
     .sign(ALIPAY_APP_PRIVATE_KEY, 'base64');
 
   return sign;
+};
+
+/**
+ * 支付宝：支付地址
+ */
+export const alipayRequestUrl = (
+  requestParams: AlipayRequestParams,
+  sign: string,
+) => {
+  const requestParamsString = querystring.stringify({
+    ...requestParams,
+    sign,
+  });
+
+  const requestUrl = `${ALIPAY_GATEWAY}?${requestParamsString}`;
+  return requestUrl;
 };
