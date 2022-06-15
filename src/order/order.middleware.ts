@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
+import { filter } from 'lodash';
+import _ = require('lodash');
 import { PaymentName } from '../payment/payment.model';
 import { getPostById, PostStatus } from '../post/post.service';
 import { ProductStatus } from '../product/product.model';
@@ -127,6 +129,95 @@ export const payOrderGuard = async (
   } catch (error) {
     return next(error);
   }
+
+  return next();
+};
+
+/**
+ * 订单列表过滤器
+ */
+export interface OrderIndexAllowedFilter {
+  order?: string;
+  user?: string;
+  payment?: string;
+  status?: OrderStatus;
+  owner?: number;
+  created?: Array<string>;
+}
+
+export const orderIndexFilter = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const filters: OrderIndexAllowedFilter = _.pick(request.query, [
+    'order',
+    'user',
+    'payment',
+    'status',
+  ]) as OrderIndexAllowedFilter;
+
+  // 订单日期
+  const { created } = request.query;
+  if (created) {
+    const dates = decodeURI(created as string).split('|');
+    filters.created = dates;
+  }
+
+  // 当前用户
+  const { id: userId } = request.user;
+  filters.owner = userId;
+
+  // 管理模式
+  const { admin } = request.query;
+  if (admin === 'true' && userId === 1) {
+    delete filters.owner;
+  }
+
+  // 过滤条件 SQL
+  let filterSql = 'order.id IS NOT NULL';
+
+  // SQL 参数
+  let params = [];
+
+  for (const [type, value] of Object.entries(filters)) {
+    let sql = '';
+
+    switch (type) {
+      case 'status':
+        sql = 'order.status = ?';
+        break;
+      case 'order':
+        sql = 'order.id = ?';
+        break;
+      case 'user':
+        sql = 'user.name LIKE ?';
+        break;
+      case 'payment':
+        sql = 'order.payment = ?';
+        break;
+      case 'created':
+        sql = 'DATE(order.created) between ? AND ?';
+        break;
+      case 'owner':
+        sql = 'post.userId = ?';
+        break;
+    }
+
+    filterSql = `${filterSql} AND ${sql}`;
+
+    if (Array.isArray(value)) {
+      params = [...params, ...value];
+    } else {
+      params = [...params, value];
+    }
+  }
+
+  request.filter = {
+    name: 'orderIndex',
+    sql: filterSql,
+    params,
+  };
 
   return next();
 };
