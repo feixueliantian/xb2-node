@@ -37,6 +37,8 @@ app.use(currentUser);
 
 app.use(express.json());
 
+app.use(express.text({ type: 'text/xml' }));
+
 app.use(
   postRouter,
   userRouter,
