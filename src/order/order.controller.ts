@@ -90,7 +90,7 @@ export const store = async (
       }
     }
 
-    return response.status(201).send(data);
+    return response.status(201).send(order);
   } catch (error) {
     return next(error);
   }
