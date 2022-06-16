@@ -26,7 +26,7 @@ import {
   updateSubscription,
 } from '../subscription/subscription.service';
 import { OrderModel } from './order.model';
-import { createOrder, updateOrder } from './order.service';
+import { createOrder, getOrders, updateOrder } from './order.service';
 
 /**
  * 创建订单
@@ -305,6 +305,24 @@ export const pay = async (
     }
 
     response.send(data);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * 订单列表
+ */
+export const index = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { filter, pagination } = request;
+
+  try {
+    const orders = await getOrders({ filter, pagination });
+    return response.send(orders);
   } catch (error) {
     return next(error);
   }
