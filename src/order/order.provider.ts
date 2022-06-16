@@ -12,7 +12,8 @@ export const orderSqlFragment = {
     JSON_OBJECT(
       'id', product.id,
       'title', product.title,
-      'type', product.type
+      'type', product.type,
+      'meta', product.meta
     ) as product
   `,
 
