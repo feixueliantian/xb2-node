@@ -56,7 +56,7 @@ export const updateOrder = async (orderId: number, order: OrderModel) => {
  */
 export interface GetOrdersOptions {
   filter: GetPostsOptionsFilter;
-  pagination: GetPostsOptionsPagination;
+  pagination?: GetPostsOptionsPagination;
 }
 
 export const getOrders = async (options: GetOrdersOptions) => {
@@ -84,4 +84,30 @@ export const getOrders = async (options: GetOrdersOptions) => {
 
   const [data] = await connection.promise().query(statement, params);
   return data as any;
+};
+
+/**
+ * 统计订单
+ */
+export const countOrders = async (options: GetOrdersOptions) => {
+  const { filter } = options;
+
+  const statement = `
+    SELECT
+      COUNT(*) as count,
+      SUM(totalAmount) as totalAmount
+    FROM
+      (
+        SELECT
+          order.totalAmount
+        FROM
+          \`order\`
+        ${orderSqlFragment.leftJoinTables}
+        WHERE ${filter.sql}
+        GROUP BY order.id
+      ) AS count
+  `;
+
+  const [data] = await connection.promise().query(statement, filter.params);
+  return data[0] as any;
 };

@@ -26,7 +26,12 @@ import {
   updateSubscription,
 } from '../subscription/subscription.service';
 import { OrderModel } from './order.model';
-import { createOrder, getOrders, updateOrder } from './order.service';
+import {
+  countOrders,
+  createOrder,
+  getOrders,
+  updateOrder,
+} from './order.service';
 
 /**
  * 创建订单
@@ -322,7 +327,10 @@ export const index = async (
 
   try {
     const orders = await getOrders({ filter, pagination });
-    return response.send(orders);
+    const ordersCount = await countOrders({ filter });
+
+    response.header('X-Total-Count', ordersCount.count);
+    return response.send({ orders, ordersCount });
   } catch (error) {
     return next(error);
   }
