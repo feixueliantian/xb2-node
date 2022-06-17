@@ -7,7 +7,7 @@ import {
   GetPostsOptionsPagination,
 } from '../post/post.service';
 import { PostModel } from '../post/post.model';
-import { ProductType } from '../product/product.model';
+import { SubscriptionType } from '../subscription/subscription.model';
 
 /**
  * 创建订单
@@ -194,7 +194,7 @@ const getPostSalesByPostId = async (postId: number) => {
  * 调取订单订阅项目
  */
 export const getOrderSubscriptionItem = async (
-  subscriptionType: ProductType,
+  subscriptionType: SubscriptionType,
 ) => {
   const statement = `
     SELECT
@@ -212,8 +212,8 @@ export const getOrderSubscriptionItem = async (
       product ON order.productId = product.id
     WHERE
       order.status = 'completed'
-      AND product.type = ?
-    GROUP BY product.type
+      AND product.meta->'$.subscriptionType' = ?
+    GROUP BY product.id
   `;
 
   const [data] = await connection.promise().query(statement, subscriptionType);

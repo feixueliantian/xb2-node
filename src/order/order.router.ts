@@ -66,4 +66,12 @@ router.get(
   orderController.licenseItem,
 );
 
+// 订单订阅项目
+router.get(
+  '/orders/:orderId/subscription-item',
+  authGuard,
+  accessControl({ isAdmin: true }),
+  orderController.subscriptionItem,
+);
+
 export default router;
