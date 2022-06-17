@@ -161,6 +161,7 @@ const getPostByOrderId = async (orderId: number) => {
       post ON post.id = license.resourceId
     WHERE
       order.id = ?
+      AND order.status = 'completed'
     `;
 
   const [data] = await connection.promise().query(statement, orderId);
