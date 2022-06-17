@@ -29,6 +29,7 @@ import { OrderModel } from './order.model';
 import {
   countOrders,
   createOrder,
+  getOrderLicenseItem,
   getOrders,
   updateOrder,
 } from './order.service';
@@ -331,6 +332,24 @@ export const index = async (
 
     response.header('X-Total-Count', ordersCount.count);
     return response.send({ orders, ordersCount });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * 订单许可项目
+ */
+export const licenseItem = async (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+) => {
+  const { orderId } = request.params;
+
+  try {
+    const item = await getOrderLicenseItem(parseInt(orderId, 10));
+    response.send(item);
   } catch (error) {
     return next(error);
   }
