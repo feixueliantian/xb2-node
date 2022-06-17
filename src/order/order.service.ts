@@ -6,6 +6,7 @@ import {
   GetPostsOptionsFilter,
   GetPostsOptionsPagination,
 } from '../post/post.service';
+import { PostModel } from '../post/post.model';
 
 /**
  * 创建订单
@@ -109,5 +110,80 @@ export const countOrders = async (options: GetOrdersOptions) => {
   `;
 
   const [data] = await connection.promise().query(statement, filter.params);
+  return data[0] as any;
+};
+
+/**
+ * 根据订单 ID 获取对应的 post
+ */
+export const getOrderLicenseItem = async (orderId: number) => {
+  const post = await getPostByOrderId(orderId);
+  if (!post) return null;
+
+  const statement = `
+    SELECT
+      post.id,
+      post.title,
+      ${postSqlFragment.file},
+      ${postSqlFragment.user}
+    FROM
+      post
+    ${postSqlFragment.leftJoinOneFile}
+    ${postSqlFragment.leftJoinUser}
+    WHERE
+      post.id = ?
+    GROUP BY
+      post.id
+  `;
+
+  const [data] = await connection.promise().query(statement, post.id);
+  const postData = data[0];
+
+  const salesData = await getPostSalesByPostId(post.id);
+  if (salesData) {
+    postData.sales = salesData.sales;
+  } else {
+    postData.sales = null;
+  }
+  return postData as any;
+};
+
+const getPostByOrderId = async (orderId: number) => {
+  const statement = `
+    SELECT
+      post.*
+    FROM
+      \`order\`
+    INNER JOIN
+      license ON license.orderId = order.id
+    INNER JOIN
+      post ON post.id = license.resourceId
+    WHERE
+      order.id = ?
+    `;
+
+  const [data] = await connection.promise().query(statement, orderId);
+  return data[0] as PostModel;
+};
+
+const getPostSalesByPostId = async (postId: number) => {
+  const statement = `
+    SELECT
+      JSON_OBJECT(
+        'count', COUNT(order.id),
+        'totalAmount', IF(
+          COUNT(order.id),
+          SUM(order.totalAmount),
+          0
+        )
+      ) AS sales
+    FROM
+      license
+    LEFT JOIN \`order\` ON license.orderId = order.id
+    WHERE license.resourceId = ?
+    GROUP BY license.resourceId
+  `;
+
+  const [data] = await connection.promise().query(statement, postId);
   return data[0] as any;
 };
