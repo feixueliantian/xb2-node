@@ -43,15 +43,25 @@ export const updateLicense = async (
 export const getLicenseByOrderId = async (orderId: number) => {
   const statement = `
     SELECT
-      *
+      license.*,
+      JSON_OBJECT(
+        'id', 'post.id',
+        'title', 'post.title',
+        'user', JSON_OBJECT(
+          'id', resourceUser.id,
+          'name', resourceUser.name
+        )
+      ) AS resource
     FROM
       license
+    LEFT JOIN post ON license.resourceId = post.id
+    LEFT JOIN user AS resourceUser ON post.userId = resourceUser.id
     WHERE
       license.orderId = ?
   `;
 
   const [data] = await connection.promise().query(statement, orderId);
-  return data[0] as LicenseModel;
+  return data[0] as any;
 };
 
 /**
