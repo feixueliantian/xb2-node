@@ -7,6 +7,7 @@ import {
   GetPostsOptionsPagination,
 } from '../post/post.service';
 import { PostModel } from '../post/post.model';
+import { ProductType } from '../product/product.model';
 
 /**
  * 创建订单
@@ -185,5 +186,35 @@ const getPostSalesByPostId = async (postId: number) => {
   `;
 
   const [data] = await connection.promise().query(statement, postId);
+  return data[0] as any;
+};
+
+/**
+ * 调取订单订阅项目
+ */
+export const getOrderSubscriptionItem = async (
+  subscriptionType: ProductType,
+) => {
+  const statement = `
+    SELECT
+      product.id,
+      product.title,
+      product.type,
+      product.meta,
+      JSON_OBJECT(
+        'count', COUNT(order.id),
+        'totalAmount', SUM(order.totalAmount)
+      ) AS sales
+    FROM
+      \`order\`
+    LEFT JOIN
+      product ON order.productId = product.id
+    WHERE
+      order.status = 'completed'
+      AND product.type = ?
+    GROUP BY product.type
+  `;
+
+  const [data] = await connection.promise().query(statement, subscriptionType);
   return data[0] as any;
 };
